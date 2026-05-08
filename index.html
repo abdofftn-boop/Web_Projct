@@ -1,32 +1,175 @@
-<!DOCTYPE html>
+# -*- coding: utf-8 -*-
+import os
+from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+# مجلد لحفظ ملفات الـ RAW
+UPLOAD_FOLDER = 'raw_files'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# واجهة الـ HTML مدمجة مباشرة داخل كود البايثون لسهولة التشغيل
+HTML_TEMPLATE = '''<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>عائلة TaTo | FAYO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaTo RAW | لوحة تحكم السكربتات</title>
     <style>
+        :root {
+            --neon-blue: #00d2ff;
+            --dark-bg: #0b0b0e;
+            --panel-bg: #141419;
+        }
         body {
-            background-color: #1a1a1a;
+            background-color: var(--dark-bg);
             color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-blue);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+            margin-top: 40px;
+        }
+        h1 {
+            color: var(--neon-blue);
             text-align: center;
-            font-family: Arial, sans-serif;
-            padding: 50px;
+            text-shadow: 0 0 8px var(--neon-blue);
+            margin-top: 0;
         }
-        .header {
-            color: #00d2ff;
-            font-size: 50px;
-            text-shadow: 2px 2px 10px #00d2ff;
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
         }
-        .content {
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            background: #1c1c24;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #00ffcc;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 250px;
+            resize: vertical;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
             margin-top: 20px;
-            font-size: 20px;
+            background: var(--neon-blue);
+            border: none;
+            border-radius: 6px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-submit:hover {
+            box-shadow: 0 0 15px var(--neon-blue);
+            transform: translateY(-2px);
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1 class="header">عائلة TaTo</h1>
-    <div class="content">
-        <p>مرحباً بك، أنا <strong>FAYO</strong> مالك السكربتات.</p>
-        <p>هذا الموقع هو المقر الرسمي لمشاريعنا القادمة.</p>
+
+    <div class="container">
+        <h1>TaTo RAW System</h1>
+        <p style="text-align: center; color: #888;">اكتب سكربت (Lua / Python) الخاص بك هنا للحصول على رابط RAW سريع لدلتا</p>
+        
+        <form action="/upload" method="POST" target="_blank">
+            <label for="filename">اسم الملف مع الصيغة (مثال: script.lua):</label>
+            <input type="text" id="filename" name="filename" placeholder="delta_hub.lua" required>
+
+            <label for="code">أدخل الكود البرمجي هنا:</label>
+            <textarea id="code" name="code" placeholder="-- اكتب كود لغة Lua أو Python الخاص بك هنا..." required></textarea>
+
+            <button type="submit" class="btn-submit">توليد رابط RAW مباشر</button>
+        </form>
+        <div class="footer">TaTo Family - Owned by FAYO</div>
     </div>
+
 </body>
-</html>
+</html>'''
+
+# الصفحة الرئيسية تعرض واجهة التحكم (HTML)
+@app.route('/')
+def home():
+    return render_template_string(HTML_TEMPLATE)
+
+# استقبال البيانات وحفظها وتوليد رابط الـ RAW
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    code_content = request.form.get('code')
+    file_name = request.form.get('filename', 'script.lua')
+    
+    if not code_content:
+        return "خطأ: لم يتم كتابة أي كود!", 400
+        
+    # حفظ الملف داخل المجلد الخاص بالـ RAW
+    file_path = os.path.join(UPLOAD_FOLDER, file_name)
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(code_content)
+        
+    # إرجاع رابط الـ RAW المباشر
+    raw_url = f"{request.host_url}raw/{file_name}"
+    
+    # واجهة نجاح أنيقة تعرض الرابط
+    success_html = f'''
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>تم التوليد بنجاح!</title>
+        <style>
+            body {{ background-color: #0b0b0e; color: white; font-family: monospace; text-align: center; padding-top: 50px; }}
+            .box {{ max-width: 600px; margin: auto; padding: 20px; border: 1px solid #00d2ff; border-radius: 10px; background: #141419; }}
+            a {{ color: #00d2ff; text-decoration: none; font-size: 18px; word-break: break-all; }}
+            a:hover {{ text-decoration: underline; }}
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <h2 style="color: #00ffcc;">تم رفع السكربت وتوليد الرابط بنجاح!</h2>
+            <p>رابط RAW المباشر (جاهز للاستخدام في Delta أو بايثون):</p>
+            <p><a href="{raw_url}" target="_blank">{raw_url}</a></p>
+            <br>
+            <button onclick="window.close()" style="padding: 10px 20px; background: #00d2ff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">إغلاق الصفحة</button>
+        </div>
+    </body>
+    </html>
+    '''
+    return render_template_string(success_html)
+
+# قراءة الملف كـ RAW (نص خام)
+@app.route('/raw/<filename>', methods=['GET'])
+def get_raw_file(filename):
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read(), 200, {'Content-Type': 'text/plain; charset=utf-8'}
+    return "الملف غير موجود!", 404
+
+if __name__ == '__main__':
+    # تشغيل السيرفر على الشبكة المحلية ليعمل على أي جهاز متصل
+    print("سيرفر TaTo RAW يعمل الآن!")
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -3,156 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo Universal Audio Player</title>
+    <title>TaTo All-Files Audio Player</title>
     <style>
-        /* التصميم السينمائي المظلم */
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #030303;
-            color: #fff;
+            margin: 0; padding: 0; background-color: #030303; color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; overflow: hidden; position: relative;
         }
-
-        /* خلفية الموقع المتغيرة */
         .background-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://images.unsplash.com/photo-1614680376593-902f74fa0d41?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
-            filter: blur(12px) brightness(0.25);
-            z-index: -1;
-            transition: background 0.5s ease;
+            filter: blur(12px) brightness(0.25); z-index: -1; transition: background 0.5s ease;
         }
-
-        /* حاوية النبض المركزي المتفجر */
         .visualizer-container {
-            position: relative;
-            width: 380px;
-            height: 380px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative; width: 350px; height: 350px;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        /* هالة النيون الخارجية العنيفة */
         .neon-glow {
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
+            position: absolute; width: 200px; height: 200px; border-radius: 50%;
             background: radial-gradient(circle, rgba(0, 240, 255, 0.7) 0%, rgba(255, 0, 127, 0.4) 50%, transparent 70%);
-            filter: blur(30px);
-            z-index: 1;
-            opacity: 0.2;
-            transform: scale(1);
-            transition: all 0.08s ease-out;
+            filter: blur(30px); z-index: 1; opacity: 0.2; transform: scale(1); transition: all 0.08s ease-out;
         }
-
-        /* الشعار الدائري المركزي */
         .main-logo {
-            position: relative;
-            width: 190px;
-            height: 190px;
-            border-radius: 50%;
+            position: relative; width: 180px; height: 180px; border-radius: 50%;
             background: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
-            border: 5px solid #fff;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
-            z-index: 2;
-            transition: all 0.08s ease-out;
+            border: 5px solid #fff; box-shadow: 0 0 25px rgba(255, 255, 255, 0.4); z-index: 2; transition: all 0.08s ease-out;
         }
-
-        /* تأثيرات الحركة والنبض القوي المتناسق مع الموسيقى */
-        .playing .main-logo {
-            animation: extremeLogo 0.35s infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .playing .neon-glow {
-            animation: extremeGlow 0.35s infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
+        .playing .main-logo { animation: extremeLogo 0.35s infinite alternate ease-in-out; }
+        .playing .neon-glow { animation: extremeGlow 0.35s infinite alternate ease-in-out; }
         @keyframes extremeLogo {
             0% { transform: scale(0.96); box-shadow: 0 0 20px rgba(255, 0, 127, 0.5); border-color: #ff007f; }
-            100% { transform: scale(1.12); box-shadow: 0 0 50px rgba(0, 240, 255, 1), 0 0 20px #00f0ff; border-color: #00f0ff; }
+            100% { transform: scale(1.12); box-shadow: 0 0 50px rgba(0, 240, 255, 1); border-color: #00f0ff; }
         }
-
         @keyframes extremeGlow {
             0% { transform: scale(0.9); opacity: 0.3; }
-            100% { transform: scale(1.6); opacity: 1; background: radial-gradient(circle, rgba(255, 0, 127, 0.8) 0%, rgba(0, 240, 255, 0.5) 60%, transparent 70%); }
+            100% { transform: scale(1.5); opacity: 1; }
         }
-
-        /* صندوق الكلمات */
         .lyrics-box {
-            margin-top: 25px;
-            font-size: 24px;
-            font-weight: 900;
-            text-align: center;
-            min-height: 45px;
-            text-shadow: 0 0 15px #fff, 0 0 30px #ff007f;
-            z-index: 5;
+            margin-top: 25px; font-size: 22px; font-weight: 900; text-align: center;
+            min-height: 45px; text-shadow: 0 0 15px #fff, 0 0 30px #ff007f; z-index: 5;
         }
-
-        .playing .lyrics-box {
-            animation: textJitter 0.35s infinite alternate ease-in-out;
-        }
-
+        .playing .lyrics-box { animation: textJitter 0.35s infinite alternate ease-in-out; }
         @keyframes textJitter {
-            0% { transform: scale(1); text-shadow: 0 0 15px #fff; }
-            100% { transform: scale(1.08); color: #00f0ff; text-shadow: 0 0 25px #00f0ff; }
+            0% { transform: scale(1); }
+            100% { transform: scale(1.06); color: #00f0ff; }
         }
-
-        /* لوحة رفع الملفات الذكية للأيفون */
         .upload-panel {
-            margin-top: 35px;
-            background: rgba(15, 15, 15, 0.95);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 90%;
-            max-width: 430px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 10;
+            margin-top: 30px; background: rgba(15, 15, 15, 0.95); padding: 20px;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            width: 90%; max-width: 400px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; z-index: 10;
         }
-
         .file-label {
-            background: #181818;
-            border: 1px dashed #444;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 14px;
-            color: #ccc;
-            transition: 0.2s;
+            background: #181818; border: 1px dashed #444; padding: 14px;
+            border-radius: 8px; text-align: center; cursor: pointer; font-size: 14px; color: #ccc;
         }
-
-        .file-label:hover {
-            border-color: #00f0ff;
-            color: #fff;
-        }
-
         input[type="file"] { display: none; }
-
         .btn-main {
             background: linear-gradient(45deg, #00f0ff, #7000ff, #ff007f);
-            background-size: 200% auto;
-            border: none;
-            color: white;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 240, 255, 0.3);
+            border: none; color: white; padding: 14px; font-size: 18px; font-weight: bold;
+            border-radius: 12px; cursor: pointer; box-shadow: 0 5px 20px rgba(0, 240, 255, 0.3);
         }
     </style>
 </head>
@@ -165,16 +75,16 @@
         <div class="main-logo" id="logoDiv"></div>
     </div>
 
-    <div class="lyrics-box" id="lyricsBox">🎧 صمّم الـ Edit الخاص بك 🎧</div>
+    <div class="lyrics-box" id="lyricsBox">🎵 اختر ملف الصوت للبدء 🎵</div>
 
     <div class="upload-panel">
         <label class="file-label">
-            🎵 اختر الأغنية (يدعم أي ملف صوت أو فيديو)
-            <input type="file" id="audioFile" accept="audio/*,video/*">
+            📁 اضغط لاختيار الأغنية (من أي مجلد)
+            <input type="file" id="audioFile" accept="*">
         </label>
         
         <label class="file-label">
-            🖼️ اختر صورة اللوجو الدائري
+            🖼️ اختر صورة اللوجو
             <input type="file" id="logoFile" accept="image/*">
         </label>
 
@@ -207,13 +117,12 @@
             "KEEP RIDING THE WAVE 🌊"
         ];
 
-        // قراءة أي نوع ملف (صوت أو فيديو) وتحويله لمشغل الصوت
+        // قراءة الملف أياً كان نوعه
         audioFileInput.addEventListener('change', function(e) {
             const file = e.target.files;
             if (file) {
-                const fileURL = URL.createObjectURL(file);
-                audio.src = fileURL;
-                lyricsBox.innerText = "تم تحميل الملف وجاهز للتشغيل! ⚡";
+                audio.src = URL.createObjectURL(file);
+                lyricsBox.innerText = "تم تحميل الملف! اضغط تشغيل الإيقاع 🔥";
                 visualizerContainer.classList.remove('playing');
                 playBtn.innerText = "تـشـغـيـل الـإيـقـاع ▶";
             }
@@ -232,7 +141,7 @@
         let lyricsInterval;
         playBtn.addEventListener('click', () => {
             if (!audio.src) {
-                alert("يا فايو، اختر ملف الصوت أو الفيديو أولاً!");
+                alert("اختر ملف الأغنية أولاً يا فايو!");
                 return;
             }
 
@@ -245,7 +154,9 @@
                         lyricsBox.innerText = customLyrics[randomIndex];
                     }, 1500);
                 }).catch(err => {
-                    alert("عذراً، هذا الملف غير مدعوم للتشغيل المباشر من المتصفح.");
+                    alert("النبض سيعمل! ولكن إذا لم يخرج صوت، تأكد من نقل الملف لمجلد التنزيلات العادي.");
+                    visualizerContainer.classList.add('playing');
+                    playBtn.innerText = "إيقاف مؤقت ⏸";
                 });
             } else {
                 audio.pause();
@@ -258,7 +169,7 @@
 
         audio.addEventListener('ended', () => {
             visualizerContainer.classList.remove('playing');
-            playBtn.innerText = "تـشـغـيـل الـإيـقـاع ▶";
+            playBtn.innerText = "تـشـغ - يـل الـإيـقـاع ▶";
             clearInterval(lyricsInterval);
             lyricsBox.innerText = "انتهى الـ Edit 🔄";
         });

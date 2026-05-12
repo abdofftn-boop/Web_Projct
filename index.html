@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo Ultra Visualizer Pro</title>
+    <title>TaTo Universal Audio Player</title>
     <style>
-        /* تصميم سينمائي مظلم يناسب الواجهات الاحترافية */
+        /* التصميم السينمائي المظلم */
         body {
             margin: 0;
             padding: 0;
@@ -21,12 +21,12 @@
             position: relative;
         }
 
-        /* خلفية الأنمي الديناميكية المخصصة */
+        /* خلفية الموقع المتغيرة */
         .background-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://images.unsplash.com/photo-1614680376593-902f74fa0d41?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
-            filter: blur(10px) brightness(0.25);
+            filter: blur(12px) brightness(0.25);
             z-index: -1;
             transition: background 0.5s ease;
         }
@@ -52,7 +52,7 @@
             z-index: 1;
             opacity: 0.2;
             transform: scale(1);
-            transition: all 0.08s ease-out; /* استجابة فائقة السرعة لشكل قوي */
+            transition: all 0.08s ease-out;
         }
 
         /* الشعار الدائري المركزي */
@@ -68,7 +68,7 @@
             transition: all 0.08s ease-out;
         }
 
-        /* تأثيرات الحركة والنبض المتفجر والاهتزاز المستمر (Crazy Pulsing) */
+        /* تأثيرات الحركة والنبض القوي المتناسق مع الموسيقى */
         .playing .main-logo {
             animation: extremeLogo 0.35s infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -79,26 +79,23 @@
 
         @keyframes extremeLogo {
             0% { transform: scale(0.96); box-shadow: 0 0 20px rgba(255, 0, 127, 0.5); border-color: #ff007f; }
-            50% { transform: scale(1.02); }
             100% { transform: scale(1.12); box-shadow: 0 0 50px rgba(0, 240, 255, 1), 0 0 20px #00f0ff; border-color: #00f0ff; }
         }
 
         @keyframes extremeGlow {
-            0% { transform: scale(0.9); opacity: 0.3; filter: blur(20px); }
-            100% { transform: scale(1.6); opacity: 1; filter: blur(40px); background: radial-gradient(circle, rgba(255, 0, 127, 0.8) 0%, rgba(0, 240, 255, 0.5) 60%, transparent 70%); }
+            0% { transform: scale(0.9); opacity: 0.3; }
+            100% { transform: scale(1.6); opacity: 1; background: radial-gradient(circle, rgba(255, 0, 127, 0.8) 0%, rgba(0, 240, 255, 0.5) 60%, transparent 70%); }
         }
 
-        /* صندوق كلمات الـ Edit السحرية */
+        /* صندوق الكلمات */
         .lyrics-box {
             margin-top: 25px;
             font-size: 24px;
             font-weight: 900;
             text-align: center;
             min-height: 45px;
-            letter-spacing: 1px;
             text-shadow: 0 0 15px #fff, 0 0 30px #ff007f;
             z-index: 5;
-            transition: transform 0.1s ease;
         }
 
         .playing .lyrics-box {
@@ -107,10 +104,10 @@
 
         @keyframes textJitter {
             0% { transform: scale(1); text-shadow: 0 0 15px #fff; }
-            100% { transform: scale(1.08); color: #00f0ff; text-shadow: 0 0 25px #00f0ff, 0 0 10px #7000ff; }
+            100% { transform: scale(1.08); color: #00f0ff; text-shadow: 0 0 25px #00f0ff; }
         }
 
-        /* لوحة التحكم ورفع الملفات الذكية للأيفون */
+        /* لوحة رفع الملفات الذكية للأيفون */
         .upload-panel {
             margin-top: 35px;
             background: rgba(15, 15, 15, 0.95);
@@ -129,7 +126,7 @@
         .file-label {
             background: #181818;
             border: 1px dashed #444;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
@@ -155,13 +152,7 @@
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
-            transition: 0.3s;
             box-shadow: 0 5px 20px rgba(0, 240, 255, 0.3);
-        }
-
-        .btn-main:hover {
-            background-position: right center;
-            transform: scale(1.02);
         }
     </style>
 </head>
@@ -178,17 +169,17 @@
 
     <div class="upload-panel">
         <label class="file-label">
-            🎵 اضغط هنا لاختيار الأغنية من جهازك
-            <input type="file" id="audioFile" accept="audio/*">
+            🎵 اختر الأغنية (يدعم أي ملف صوت أو فيديو)
+            <input type="file" id="audioFile" accept="audio/*,video/*">
         </label>
         
         <label class="file-label">
-            🖼️ اضغط هنا لاختيار صورة اللوجو الدائري
+            🖼️ اختر صورة اللوجو الدائري
             <input type="file" id="logoFile" accept="image/*">
         </label>
 
         <label class="file-label">
-            🌌 اضغط هنا لاختيار صورة الخلفية (اختياري)
+            🌌 اختر صورة الخلفية
             <input type="file" id="bgFile" accept="image/*">
         </label>
 
@@ -202,15 +193,12 @@
         const playBtn = document.getElementById('playBtn');
         const visualizerContainer = document.getElementById('visualizerContainer');
         const lyricsBox = document.getElementById('lyricsBox');
-        
-        // عناصر الملفات والصور
         const audioFileInput = document.getElementById('audioFile');
         const logoFileInput = document.getElementById('logoFile');
         const bgFileInput = document.getElementById('bgFile');
         const logoDiv = document.getElementById('logoDiv');
         const bgOverlay = document.getElementById('bgOverlay');
 
-        // كلمات افتراضية حماسية تتبدل تلقائياً مع الحركة العنيفة للأنيميشن
         const customLyrics = [
             "LET THE BASS DROP! 🔥",
             "TaTo FAMILY ON TRACK 🚀",
@@ -219,51 +207,46 @@
             "KEEP RIDING THE WAVE 🌊"
         ];
 
-        // 1. عند اختيار ملف الصوت من الآيفون
+        // قراءة أي نوع ملف (صوت أو فيديو) وتحويله لمشغل الصوت
         audioFileInput.addEventListener('change', function(e) {
             const file = e.target.files;
             if (file) {
-                audio.src = URL.createObjectURL(file);
-                lyricsBox.innerText = "تم تحميل الأغنية بنجاح! جاهز للانفجار ⚡";
+                const fileURL = URL.createObjectURL(file);
+                audio.src = fileURL;
+                lyricsBox.innerText = "تم تحميل الملف وجاهز للتشغيل! ⚡";
                 visualizerContainer.classList.remove('playing');
                 playBtn.innerText = "تـشـغـيـل الـإيـقـاع ▶";
             }
         });
 
-        // 2. عند اختيار صورة اللوجو الدائري
         logoFileInput.addEventListener('change', function(e) {
             const file = e.target.files;
-            if (file) {
-                logoDiv.style.backgroundImage = `url('${URL.createObjectURL(file)}')`;
-            }
+            if (file) { logoDiv.style.backgroundImage = `url('${URL.createObjectURL(file)}')`; }
         });
 
-        // 3. عند اختيار صورة الخلفية العامة
         bgFileInput.addEventListener('change', function(e) {
             const file = e.target.files;
-            if (file) {
-                bgOverlay.style.backgroundImage = `url('${URL.createObjectURL(file)}')`;
-            }
+            if (file) { bgOverlay.style.backgroundImage = `url('${URL.createObjectURL(file)}')`; }
         });
 
-        // 4. تشغيل وإيقاف النبض المجنون والموسيقى
         let lyricsInterval;
         playBtn.addEventListener('click', () => {
             if (!audio.src) {
-                alert("يا فايو، اختر ملف الأغنية أولاً من الزر المخصص لها!");
+                alert("يا فايو، اختر ملف الصوت أو الفيديو أولاً!");
                 return;
             }
 
             if (audio.paused) {
-                audio.play();
-                visualizerContainer.classList.add('playing');
-                playBtn.innerText = "إيقاف مؤقت ⏸";
-                
-                // تدوير الكلمات الحماسية بشكل عشوائي مع الإيقاع القوي
-                lyricsInterval = setInterval(() => {
-                    const randomIndex = Math.floor(Math.random() * customLyrics.length);
-                    lyricsBox.innerText = customLyrics[randomIndex];
-                }, 1500);
+                audio.play().then(() => {
+                    visualizerContainer.classList.add('playing');
+                    playBtn.innerText = "إيقاف مؤقت ⏸";
+                    lyricsInterval = setInterval(() => {
+                        const randomIndex = Math.floor(Math.random() * customLyrics.length);
+                        lyricsBox.innerText = customLyrics[randomIndex];
+                    }, 1500);
+                }).catch(err => {
+                    alert("عذراً، هذا الملف غير مدعوم للتشغيل المباشر من المتصفح.");
+                });
             } else {
                 audio.pause();
                 visualizerContainer.classList.remove('playing');

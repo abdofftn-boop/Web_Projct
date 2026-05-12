@@ -1,175 +1,256 @@
-# -*- coding: utf-8 -*-
-import os
-from flask import Flask, request, render_template_string
-
-app = Flask(__name__)
-
-# مجلد لحفظ ملفات الـ RAW
-UPLOAD_FOLDER = 'raw_files'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# واجهة الـ HTML مدمجة مباشرة داخل كود البايثون لسهولة التشغيل
-HTML_TEMPLATE = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo RAW | لوحة تحكم السكربتات</title>
+    <title>TaTo Audio Edit Player</title>
     <style>
-        :root {
-            --neon-blue: #00d2ff;
-            --dark-bg: #0b0b0e;
-            --panel-bg: #141419;
-        }
+        /* إعدادات الخلفية العامة والتصميم المظلم */
         body {
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background: #0b0b0b;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        .container {
+
+        /* خلفية الأنمي الضبابية المليئة بالحيوية */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 700px;
-            background: var(--panel-bg);
-            border: 1px solid var(--neon-blue);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
-            margin-top: 40px;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
+            filter: blur(8px) brightness(0.4);
+            z-index: -1;
         }
-        h1 {
-            color: var(--neon-blue);
+
+        /* حاوية المشغل الرئيسي */
+        .player-container {
+            background: rgba(20, 20, 20, 0.75);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
-            text-shadow: 0 0 8px var(--neon-blue);
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        h2 {
             margin-top: 0;
+            color: #ff007f;
+            text-shadow: 0 0 10px #ff007f;
+            font-size: 24px;
         }
-        label {
-            display: block;
-            margin: 15px 0 5px;
+
+        /* الصورة المتحركة (الهيكل العظمي أو الـ Visualizer) */
+        .visualizer-zone {
+            margin: 25px 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .visualizer-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 4px solid #00f0ff;
+            box-shadow: 0 0 20px #00f0ff;
+            object-fit: cover;
+            /* صورة هيكل عظمي راقص بصيغة GIF كمثال */
+            background: url('https://media.giphy.com/media/3ohhwfAa9GsE1AndUY/giphy.gif') center/cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* تأثير الدوران عند التشغيل */
+        .playing .visualizer-image {
+            animation: rotateVisualizer 8s linear infinite;
+        }
+
+        @keyframes rotateVisualizer {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* منطقة الكلمات (Lyrics) في المنتصف */
+        .lyrics-container {
+            height: 60px;
+            margin: 20px 0;
+            font-size: 18px;
             font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            background: #1c1c24;
-            border: 1px solid #333;
-            border-radius: 6px;
-            color: #00ffcc;
-            font-family: monospace;
-            box-sizing: border-box;
+
+        .highlight {
+            color: #00f0ff;
+            text-shadow: 0 0 12px #00f0ff;
+            transform: scale(1.1);
         }
-        textarea {
-            height: 250px;
-            resize: vertical;
+
+        /* أزرار التحكم ومجرى الصوت */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
         }
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: var(--neon-blue);
+
+        .btn-play {
+            background: linear-gradient(45deg, #ff007f, #7000ff);
             border: none;
-            border-radius: 6px;
-            color: #000;
-            font-size: 16px;
+            color: white;
+            padding: 12px 35px;
+            font-size: 18px;
             font-weight: bold;
+            border-radius: 30px;
             cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
             transition: 0.3s;
         }
-        .btn-submit:hover {
-            box-shadow: 0 0 15px var(--neon-blue);
-            transform: translateY(-2px);
+
+        .btn-play:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
         }
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #666;
-            text-align: center;
+
+        /* لوحة التحكم الجانبية للتخصيص */
+        .customizer-panel {
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .customizer-panel input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 12px 0;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .customizer-panel label {
+            color: #00f0ff;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>TaTo RAW System</h1>
-        <p style="text-align: center; color: #888;">اكتب سكربت (Lua / Python) الخاص بك هنا للحصول على رابط RAW سريع لدلتا</p>
+    <div class="background-overlay"></div>
+
+    <div class="player-container" id="playerContainer">
+        <h2>Symphony - TaTo Edit 🎧</h2>
         
-        <form action="/upload" method="POST" target="_blank">
-            <label for="filename">اسم الملف مع الصيغة (مثال: script.lua):</label>
-            <input type="text" id="filename" name="filename" placeholder="delta_hub.lua" required>
+        <div class="visualizer-zone">
+            <div class="visualizer-image"></div>
+        </div>
 
-            <label for="code">أدخل الكود البرمجي هنا:</label>
-            <textarea id="code" name="code" placeholder="-- اكتب كود لغة Lua أو Python الخاص بك هنا..." required></textarea>
+        <div class="lyrics-container" id="lyricsBox">
+            اضغط تشغيل للبدء...
+        </div>
 
-            <button type="submit" class="btn-submit">توليد رابط RAW مباشر</button>
-        </form>
-        <div class="footer">TaTo Family - Owned by FAYO</div>
+        <div class="controls">
+            <button class="btn-play" id="playBtn">تـشـغـيـل ▶</button>
+            <audio id="mainAudio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+        </div>
+
+        <div class="customizer-panel">
+            <label for="audioUrl">رابط الأغنية المباشر (MP3):</label>
+            <input type="text" id="audioUrl" placeholder="أدخل رابط الأغنية هنا...">
+            
+            <label for="bgUrl">رابط صورة الخلفية:</label>
+            <input type="text" id="bgUrl" placeholder="أدخل رابط صورة الخلفية...">
+            
+            <button class="btn-play" style="padding: 6px 15px; font-size: 14px;" id="updateBtn">تحديث الإعدادات ✨</button>
+        </div>
     </div>
 
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const playBtn = document.getElementById('playBtn');
+        const playerContainer = document.getElementById('playerContainer');
+        const lyricsBox = document.getElementById('lyricsBox');
+        
+        // إعدادات التخصيص
+        const audioUrlInput = document.getElementById('audioUrl');
+        const bgUrlInput = document.getElementById('bgUrl');
+        const updateBtn = document.getElementById('updateBtn');
+        const bgOverlay = document.querySelector('.background-overlay');
+
+        // قائمة الكلمات والمزامنة بالثواني (يمكنك تعديلها وتخصيصها)
+        const lyricsTimeline = [
+            { time: 0, text: "🎵 أهلاً بك في مشغل TaTo عالي الجودة 🎵" },
+            { time: 3, text: "I just wanna be part of your symphony..." },
+            { time: 7, text: "Will you hold me tight and not let go? 💔" },
+            { time: 12, text: "Symphony... Like a love song on the radio 📻" },
+            { time: 18, text: "جاري الاستمتاع بالنغمة الحماسية... 🔥" }
+        ];
+
+        // تشغيل وإيقاف الموسيقى والتأثيرات البصرية
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerText = "إيقاف مؤقت ⏸";
+                playerContainer.classList.add('playing');
+            } else {
+                audio.pause();
+                playBtn.innerText = "تـشـغـيـل ▶";
+                playerContainer.classList.remove('playing');
+            }
+        });
+
+        // تحديث الكلمات تلقائياً بناءً على وقت الأغنية الحقيقي
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            
+            // البحث عن السطر المناسب للوقت الحالي
+            let currentText = lyricsTimeline.text;
+            for (let i = 0; i < lyricsTimeline.length; i++) {
+                if (currentTime >= lyricsTimeline[i].time) {
+                    currentText = lyricsTimeline[i].text;
+                }
+            }
+            
+            if(lyricsBox.innerText !== currentText) {
+                lyricsBox.innerText = currentText;
+                lyricsBox.classList.add('highlight');
+                setTimeout(() => lyricsBox.classList.remove('highlight'), 500);
+            }
+        });
+
+        // زر تحديث الروابط المخصصة
+        updateBtn.addEventListener('click', () => {
+            if (audioUrlInput.value.trim() !== "") {
+                audio.src = audioUrlInput.value.trim();
+                playBtn.innerText = "تـشـغـيـل ▶";
+                playerContainer.classList.remove('playing');
+                lyricsBox.innerText = "تم تغيير الأغنية! اضغط تشغيل.";
+            }
+            if (bgUrlInput.value.trim() !== "") {
+                bgOverlay.style.background = `url('${bgUrlInput.value.trim()}') center/cover no-repeat`;
+            }
+        });
+    </script>
 </body>
-</html>'''
-
-# الصفحة الرئيسية تعرض واجهة التحكم (HTML)
-@app.route('/')
-def home():
-    return render_template_string(HTML_TEMPLATE)
-
-# استقبال البيانات وحفظها وتوليد رابط الـ RAW
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    code_content = request.form.get('code')
-    file_name = request.form.get('filename', 'script.lua')
-    
-    if not code_content:
-        return "خطأ: لم يتم كتابة أي كود!", 400
-        
-    # حفظ الملف داخل المجلد الخاص بالـ RAW
-    file_path = os.path.join(UPLOAD_FOLDER, file_name)
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(code_content)
-        
-    # إرجاع رابط الـ RAW المباشر
-    raw_url = f"{request.host_url}raw/{file_name}"
-    
-    # واجهة نجاح أنيقة تعرض الرابط
-    success_html = f'''
-    <html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <title>تم التوليد بنجاح!</title>
-        <style>
-            body {{ background-color: #0b0b0e; color: white; font-family: monospace; text-align: center; padding-top: 50px; }}
-            .box {{ max-width: 600px; margin: auto; padding: 20px; border: 1px solid #00d2ff; border-radius: 10px; background: #141419; }}
-            a {{ color: #00d2ff; text-decoration: none; font-size: 18px; word-break: break-all; }}
-            a:hover {{ text-decoration: underline; }}
-        </style>
-    </head>
-    <body>
-        <div class="box">
-            <h2 style="color: #00ffcc;">تم رفع السكربت وتوليد الرابط بنجاح!</h2>
-            <p>رابط RAW المباشر (جاهز للاستخدام في Delta أو بايثون):</p>
-            <p><a href="{raw_url}" target="_blank">{raw_url}</a></p>
-            <br>
-            <button onclick="window.close()" style="padding: 10px 20px; background: #00d2ff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">إغلاق الصفحة</button>
-        </div>
-    </body>
-    </html>
-    '''
-    return render_template_string(success_html)
-
-# قراءة الملف كـ RAW (نص خام)
-@app.route('/raw/<filename>', methods=['GET'])
-def get_raw_file(filename):
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    if os.path.exists(file_path):
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return f.read(), 200, {'Content-Type': 'text/plain; charset=utf-8'}
-    return "الملف غير موجود!", 404
-
-if __name__ == '__main__':
-    # تشغيل السيرفر على الشبكة المحلية ليعمل على أي جهاز متصل
-    print("سيرفر TaTo RAW يعمل الآن!")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+</html>

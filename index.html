@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo Audio Edit Player</title>
+    <title>TaTo Audio Edit - Full Layout</title>
     <style>
-        /* إعدادات الخلفية العامة والتصميم المظلم */
+        /* إعدادات الشاشة العامة لتشبه شاشة الهاتف أو مشغل الفيديو */
         body {
             margin: 0;
             padding: 0;
-            background: #0b0b0b;
+            background: #000;
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -17,240 +17,247 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* خلفية الأنمي الضبابية المليئة بالحيوية */
-        .background-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* الحاوية الرئيسية بنفس أبعاد الفيديو */
+        .video-layout {
             width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
-            filter: blur(8px) brightness(0.4);
-            z-index: -1;
-        }
-
-        /* حاوية المشغل الرئيسي */
-        .player-container {
-            background: rgba(20, 20, 20, 0.75);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            width: 90%;
             max-width: 450px;
-            position: relative;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #ff007f;
-            text-shadow: 0 0 10px #ff007f;
-            font-size: 24px;
-        }
-
-        /* الصورة المتحركة (الهيكل العظمي أو الـ Visualizer) */
-        .visualizer-zone {
-            margin: 25px 0;
-            position: relative;
-            display: inline-block;
-        }
-
-        .visualizer-image {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            border: 4px solid #00f0ff;
-            box-shadow: 0 0 20px #00f0ff;
-            object-fit: cover;
-            /* صورة هيكل عظمي راقص بصيغة GIF كمثال */
-            background: url('https://media.giphy.com/media/3ohhwfAa9GsE1AndUY/giphy.gif') center/cover;
-            transition: transform 0.5s ease;
-        }
-
-        /* تأثير الدوران عند التشغيل */
-        .playing .visualizer-image {
-            animation: rotateVisualizer 8s linear infinite;
-        }
-
-        @keyframes rotateVisualizer {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* منطقة الكلمات (Lyrics) في المنتصف */
-        .lyrics-container {
-            height: 60px;
-            margin: 20px 0;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .highlight {
-            color: #00f0ff;
-            text-shadow: 0 0 12px #00f0ff;
-            transform: scale(1.1);
-        }
-
-        /* أزرار التحكم ومجرى الصوت */
-        .controls {
+            height: 90vh;
+            max-height: 800px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            align-items: center;
+            border: 2px solid #222;
+            background: #000;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
 
-        .btn-play {
+        /* النصف العلوي: خلفية الأنمي والكلمات */
+        .top-section {
+            flex: 1;
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 3px solid #111;
+        }
+
+        /* طبقة مظلمة خفيفة فوق الأنمي لتوضيح الكلمات */
+        .top-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        /* الكلمات المكتوبة في منتصف الجزء العلوي */
+        .lyrics-box {
+            position: relative;
+            z-index: 2;
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            padding: 0 20px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px #ff007f;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        /* تأثير النبض عند تغير الكلمات */
+        .pulse {
+            transform: scale(1.15);
+            color: #00f0ff;
+            text-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+        }
+
+        /* النصف السفلي: الهيكل العظمي الراقص */
+        .bottom-section {
+            flex: 1;
+            background: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* الهيكل العظمي (Giphy المشابه للفيديو) */
+        .skeleton-gif {
+            width: 85%;
+            height: 85%;
+            background: url('https://media.giphy.com/media/3ohhwfAa9GsE1AndUY/giphy.gif') center/contain no-repeat;
+            opacity: 0.4; /* يكون شبه شفاف عندما يتوقف */
+            transition: opacity 0.3s ease;
+        }
+
+        /* عندما تعمل الموسيقى، تزيد إضاءة الهيكل العظمي */
+        .playing .skeleton-gif {
+            opacity: 1;
+            filter: drop-shadow(0 0 15px #7000ff);
+        }
+
+        /* لوحة التحكم السفلية لتشغيل وتغيير الأغنية */
+        .controls-panel {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border-top: 1px solid #222;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn {
             background: linear-gradient(45deg, #ff007f, #7000ff);
             border: none;
             color: white;
-            padding: 12px 35px;
-            font-size: 18px;
+            padding: 10px;
             font-weight: bold;
-            border-radius: 30px;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
-            transition: 0.3s;
+            transition: 0.2s;
+            flex: 1;
         }
 
-        .btn-play:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
         }
 
-        /* لوحة التحكم الجانبية للتخصيص */
-        .customizer-panel {
-            margin-top: 25px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 14px;
-            text-align: right;
-        }
-
-        .customizer-panel input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0 12px 0;
+        input {
+            flex: 2;
+            padding: 10px;
             background: #222;
-            border: 1px solid #444;
+            border: 1px solid #333;
             color: white;
-            border-radius: 6px;
-            box-sizing: border-box;
+            border-radius: 8px;
         }
 
-        .customizer-panel label {
-            color: #00f0ff;
-            font-weight: bold;
-        }
+        /* إخفاء مشغل اليوتيوب الأصلي تماماً */
+        #ytPlayer { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="background-overlay"></div>
+    <div id="ytPlayer"></div>
 
-    <div class="player-container" id="playerContainer">
-        <h2>Symphony - TaTo Edit 🎧</h2>
+    <div class="video-layout" id="videoLayout">
         
-        <div class="visualizer-zone">
-            <div class="visualizer-image"></div>
+        <div class="top-section">
+            <div class="lyrics-box" id="lyricsBox">Symphony Audio Edit</div>
         </div>
 
-        <div class="lyrics-container" id="lyricsBox">
-            اضغط تشغيل للبدء...
+        <div class="bottom-section">
+            <div class="skeleton-gif"></div>
         </div>
 
-        <div class="controls">
-            <button class="btn-play" id="playBtn">تـشـغـيـل ▶</button>
-            <audio id="mainAudio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+        <div class="controls-panel">
+            <div class="row">
+                <button class="btn" id="playBtn">تشغيل ▶</button>
+            </div>
+            <div class="row">
+                <input type="text" id="ytIdInput" placeholder="ضع كود يوتيوب (مثال: kqlXf7_O6Eg)">
+                <button class="btn" id="changeBtn" style="background: #333;">تغيير 🔄</button>
+            </div>
         </div>
 
-        <div class="customizer-panel">
-            <label for="audioUrl">رابط الأغنية المباشر (MP3):</label>
-            <input type="text" id="audioUrl" placeholder="أدخل رابط الأغنية هنا...">
-            
-            <label for="bgUrl">رابط صورة الخلفية:</label>
-            <input type="text" id="bgUrl" placeholder="أدخل رابط صورة الخلفية...">
-            
-            <button class="btn-play" style="padding: 6px 15px; font-size: 14px;" id="updateBtn">تحديث الإعدادات ✨</button>
-        </div>
     </div>
 
     <script>
-        const audio = document.getElementById('mainAudio');
-        const playBtn = document.getElementById('playBtn');
-        const playerContainer = document.getElementById('playerContainer');
-        const lyricsBox = document.getElementById('lyricsBox');
-        
-        // إعدادات التخصيص
-        const audioUrlInput = document.getElementById('audioUrl');
-        const bgUrlInput = document.getElementById('bgUrl');
-        const updateBtn = document.getElementById('updateBtn');
-        const bgOverlay = document.querySelector('.background-overlay');
+        // تحميل مكاتب اليوتيوب الرسمية
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script');
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // قائمة الكلمات والمزامنة بالثواني (يمكنك تعديلها وتخصيصها)
+        let player;
+        const playBtn = document.getElementById('playBtn');
+        const changeBtn = document.getElementById('changeBtn');
+        const ytIdInput = document.getElementById('ytIdInput');
+        const videoLayout = document.getElementById('videoLayout');
+        const lyricsBox = document.getElementById('lyricsBox');
+
+        // جدول الكلمات متزامن بالثواني مع النسخة المسرعة من الأغنية (Symphony Sped Up)
         const lyricsTimeline = [
-            { time: 0, text: "🎵 أهلاً بك في مشغل TaTo عالي الجودة 🎵" },
-            { time: 3, text: "I just wanna be part of your symphony..." },
-            { time: 7, text: "Will you hold me tight and not let go? 💔" },
-            { time: 12, text: "Symphony... Like a love song on the radio 📻" },
-            { time: 18, text: "جاري الاستمتاع بالنغمة الحماسية... 🔥" }
+            { time: 0, text: "Symphony - Clean Bandit" },
+            { time: 1, text: "and now I'm feeling incomplete" },
+            { time: 3.5, text: "so if you want the truth" },
+            { time: 6.5, text: "I just wanna be part of your symphony..." },
+            { time: 10, text: "Will you hold me tight and not let go?" },
+            { time: 14, text: "Symphony..." },
+            { time: 16, text: "Like a love song on the radio..." },
+            { time: 20, text: "will you hold me tight and not let go?" }
         ];
 
-        // تشغيل وإيقاف الموسيقى والتأثيرات البصرية
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                audio.play();
+        // تهيئة المشغل فور جاهزية الخدمة
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytPlayer', {
+                height: '0', width: '0',
+                videoId: 'kqlXf7_O6Eg', // الكود الافتراضي لـ Symphony Sped up
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        let lyricsInterval;
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
                 playBtn.innerText = "إيقاف مؤقت ⏸";
-                playerContainer.classList.add('playing');
+                videoLayout.classList.add('playing');
+                lyricsInterval = setInterval(trackLyrics, 100); // فحص الوقت بدقة كل 100 مللي ثانية
             } else {
-                audio.pause();
-                playBtn.innerText = "تـشـغـيـل ▶";
-                playerContainer.classList.remove('playing');
+                playBtn.innerText = "تشغيل ▶";
+                videoLayout.classList.remove('playing');
+                clearInterval(lyricsInterval);
+            }
+        }
+
+        // التحكم بالزر
+        playBtn.addEventListener('click', () => {
+            if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
             }
         });
 
-        // تحديث الكلمات تلقائياً بناءً على وقت الأغنية الحقيقي
-        audio.addEventListener('timeupdate', () => {
-            const currentTime = audio.currentTime;
-            
-            // البحث عن السطر المناسب للوقت الحالي
-            let currentText = lyricsTimeline.text;
+        // تغيير الأغنية عن طريق الآيدي
+        changeBtn.addEventListener('click', () => {
+            const id = ytIdInput.value.trim();
+            if(id) {
+                player.cueVideoById(id);
+                lyricsBox.innerText = "تم التحديث، اضغط تشغيل!";
+            }
+        });
+
+        // دالة مزامنة وتحديث الكلمات
+        function trackLyrics() {
+            const currentTime = player.getCurrentTime();
+            let matchedText = lyricsTimeline.text;
+
             for (let i = 0; i < lyricsTimeline.length; i++) {
                 if (currentTime >= lyricsTimeline[i].time) {
-                    currentText = lyricsTimeline[i].text;
+                    matchedText = lyricsTimeline[i].text;
                 }
             }
-            
-            if(lyricsBox.innerText !== currentText) {
-                lyricsBox.innerText = currentText;
-                lyricsBox.classList.add('highlight');
-                setTimeout(() => lyricsBox.classList.remove('highlight'), 500);
-            }
-        });
 
-        // زر تحديث الروابط المخصصة
-        updateBtn.addEventListener('click', () => {
-            if (audioUrlInput.value.trim() !== "") {
-                audio.src = audioUrlInput.value.trim();
-                playBtn.innerText = "تـشـغـيـل ▶";
-                playerContainer.classList.remove('playing');
-                lyricsBox.innerText = "تم تغيير الأغنية! اضغط تشغيل.";
+            if (lyricsBox.innerText !== matchedText) {
+                lyricsBox.innerText = matchedText;
+                lyricsBox.classList.add('pulse');
+                setTimeout(() => lyricsBox.classList.remove('pulse'), 300);
             }
-            if (bgUrlInput.value.trim() !== "") {
-                bgOverlay.style.background = `url('${bgUrlInput.value.trim()}') center/cover no-repeat`;
-            }
-        });
+        }
     </script>
 </body>
 </html>

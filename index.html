@@ -3,184 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo Neon Wave Visualizer</title>
+    <title>TaTo Interactive Player</title>
     <style>
-        /* تصميم الخلفية المظلمة */
+        :root {
+            --bg-color: #000;
+            --island-bg: #111;
+            --accent-color: #00f2fe;
+        }
+
         body {
-            margin: 0; padding: 0;
-            background-color: #050508;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            min-height: 100vh; overflow: hidden;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
         }
 
-        /* حاوية التصميم المركزي */
-        .visualizer-container {
-            position: relative;
-            width: 350px; height: 350px;
-            display: flex; align-items: center; justify-content: center;
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
         }
 
-        /* الدائرة النيونية المركزية المضيئة */
-        .neon-circle {
-            position: absolute;
-            width: 140px; height: 140px;
-            border-radius: 50%;
-            border: 4px solid #00f0ff;
-            box-shadow: 0 0 20px #00f0ff, inset 0 0 20px #00f0ff;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 24px; letter-spacing: 2px;
-            color: #fff; text-shadow: 0 0 10px #00f0ff;
-            z-index: 5;
-            transition: all 0.1s ease;
+        /* زر الرفع بتصميم عصري */
+        .upload-wrapper {
+            margin-bottom: 30px;
         }
 
-        /* الحلقات والموجات الخارجية المتفجرة */
-        .wave {
-            position: absolute;
-            width: 150px; height: 150px;
-            border-radius: 50%;
-            border: 2px solid #ff007f;
-            box-shadow: 0 0 15px #ff007f;
-            opacity: 0;
-            z-index: 2;
-        }
-
-        /* تأثير الحركة والنبض العنيف للموجات عند التشغيل */
-        .playing .neon-circle {
-            animation: pulseCore 0.4s infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .playing .wave-1 {
-            animation: explodeWave 0.8s infinite linear;
-        }
-        .playing .wave-2 {
-            animation: explodeWave 0.8s infinite linear 0.25s;
-        }
-        .playing .wave-3 {
-            animation: explodeWave 0.8s infinite linear 0.5s;
-        }
-
-        /* أنيميشن نبض قلب الدائرة المتوهجة */
-        @keyframes pulseCore {
-            0% { transform: scale(0.95); box-shadow: 0 0 15px #00f0ff; border-color: #00f0ff; text-shadow: 0 0 5px #00f0ff; }
-            100% { transform: scale(1.1); box-shadow: 0 0 40px #7000ff, 0 0 15px #7000ff; border-color: #7000ff; text-shadow: 0 0 15px #7000ff; }
-        }
-
-        /* أنيميشن انفجار وانتشار الموجات الصوتية للخارج */
-        @keyframes explodeWave {
-            0% { transform: scale(1); opacity: 0.8; border-color: #ff007f; box-shadow: 0 0 10px #ff007f; }
-            50% { border-color: #00f0ff; box-shadow: 0 0 20px #00f0ff; }
-            100% { transform: scale(2.2); opacity: 0; border-color: #7000ff; box-shadow: 0 0 5px transparent; }
-        }
-
-        /* لوحة التحكم البسيطة بدون تعقيد الصور */
-        .panel {
-            margin-top: 50px;
-            background: rgba(15, 15, 25, 0.9);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 85%; max-width: 380px;
-            text-align: center; z-index: 10;
-        }
-
-        .file-input-wrapper {
-            background: #111118;
-            border: 1px dashed #333344;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+        .upload-btn {
+            background: #222;
+            color: #eee;
+            padding: 12px 24px;
+            border-radius: 50px;
             cursor: pointer;
-            color: #aaa;
+            border: 1px solid #444;
+            transition: all 0.3s ease;
             font-size: 14px;
         }
 
-        input[type="file"] { display: none; }
-
-        .btn-action {
-            background: linear-gradient(45deg, #00f0ff, #ff007f);
-            border: none; color: white;
-            padding: 14px; width: 100%;
-            font-size: 18px; font-weight: bold;
-            border-radius: 10px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);
-            transition: 0.2s;
+        .upload-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
         }
 
-        .btn-action:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 25px rgba(255, 0, 127, 0.4);
+        /* تصميم الجزيرة التفاعلية المقتبس من image.png */
+        .player-island {
+            width: 90%;
+            max-width: 350px;
+            height: 65px;
+            background: var(--island-bg);
+            border: 1px solid #222;
+            border-radius: 40px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .status {
-            font-size: 13px; color: #666; margin-top: 10px;
+        .album-art {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            border-radius: 10px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .song-info {
+            flex-grow: 1;
+            margin: 0 15px;
+            text-align: right;
+            overflow: hidden;
+        }
+
+        #songName {
+            color: #fff;
+            font-size: 13px;
+            white-space: nowrap;
+            display: block;
+            opacity: 0.8;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 25px;
+            width: 50px;
+            justify-content: flex-end;
+        }
+
+        .bar {
+            width: 3px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 10px;
+            transition: height 0.05s linear;
         }
     </style>
 </head>
 <body>
 
-    <div class="visualizer-container" id="visualizerContainer">
-        <div class="neon-circle">TaTo</div>
-        <div class="wave wave-1"></div>
-        <div class="wave wave-2"></div>
-        <div class="wave wave-3"></div>
-    </div>
+    <div class="container">
+        <div class="upload-wrapper">
+            <input type="file" id="audioUpload" accept="audio/*" hidden>
+            <label for="audioUpload" class="upload-btn">اختر ملف موسيقى 🎵</label>
+        </div>
 
-    <div class="panel">
-        <label class="file-input-wrapper">
-            📁 اضغط هنا لاختيار ملف الصوت أو الفيديو
-            <input type="file" id="audioFile" accept="*">
-        </label>
-        <button class="btn-action" id="playBtn">تـشـغـيـل الـإيـقـاع ▶</button>
-        <div class="status" id="statusText">جاهز لاستقبال ملفك والبدء بالانفجار البصري.</div>
-    </div>
+        <div class="player-island" id="player">
+            <div class="album-art" id="art"></div>
+            
+            <div class="song-info">
+                <span id="songName">جاهز للتشغيل...</span>
+            </div>
 
-    <audio id="mainAudio"></audio>
+            <div class="visualizer" id="visualizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+        
+        <audio id="audioSource"></audio>
+    </div>
 
     <script>
-        const audio = document.getElementById('mainAudio');
-        const playBtn = document.getElementById('playBtn');
-        const visualizerContainer = document.getElementById('visualizerContainer');
-        const audioFileInput = document.getElementById('audioFile');
-        const statusText = document.getElementById('statusText');
+        const audioUpload = document.getElementById('audioUpload');
+        const audio = document.getElementById('audioSource');
+        const bars = document.querySelectorAll('.bar');
+        const songName = document.getElementById('songName');
+        
+        let audioCtx;
+        let analyser;
 
-        // عند اختيار أي ملف، قم بتحضيره فوراً
-        audioFileInput.addEventListener('change', function(e) {
-            const file = e.target.files;
-            if (file) {
-                audio.src = URL.createObjectURL(file);
-                statusText.innerText = `تم تحميل الملف: ${file.name}`;
+        audioUpload.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // عرض اسم الملف
+            songName.textContent = file.name.replace(/\.[^/.]+$/, "");
+
+            const url = URL.createObjectURL(file);
+            audio.src = url;
+
+            // Safari يتطلب بدء الـ AudioContext بعد نقرة
+            if (!audioCtx) {
+                initAudio();
             }
-        });
+            
+            audio.play().catch(err => console.log("Safari Play Error: ", err));
+        };
 
-        // تشغيل النبض بشكل فوري وتخطي أي مشاكل أمان للمتصفح
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                // الكود سيبدأ بالنبض فوراً في كل الأحوال لجعل الشكل يشتغل بدون توقف
-                visualizerContainer.classList.add('playing');
-                playBtn.innerText = "إيقاف مؤقت ⏸";
-                statusText.innerText = "الموجات والنبض تعمل الآن بأقصى قوة! 🔥";
+        function initAudio() {
+            // دعم Safari عبر window.webkitAudioContext
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            
+            const source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
 
-                // محاولة تشغيل الصوت إن أمكن في الخلفية
-                if (audio.src) {
-                    audio.play().catch(err => console.log("Audio waiting for interaction..."));
-                }
-            } else {
-                audio.pause();
-                visualizerContainer.classList.remove('playing');
-                playBtn.innerText = "تـشـغـيـل الـإيـقـاع ▶";
-                statusText.innerText = "تم الإيقاف مؤقتاً.";
+            analyser.fftSize = 64; 
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+
+                bars.forEach((bar, i) => {
+                    // نأخذ عينات من الترددات المنخفضة والمتوسطة للحصول على حركة جميلة
+                    const value = dataArray[i * 2]; 
+                    const percent = value / 255;
+                    const height = percent * 30;
+                    bar.style.height = Math.max(4, height) + 'px';
+                    // تغيير الشفافية بناءً على قوة الصوت
+                    bar.style.opacity = 0.5 + (percent * 0.5);
+                });
             }
-        });
 
-        audio.addEventListener('ended', () => {
-            visualizerContainer.classList.remove('playing');
-            playBtn.innerText = "تـشـغـيـل الـإيـقـاع ▶";
-            statusText.innerText = "انتهى المقطع.";
-        });
+            draw();
+        }
+
+        // تفعيل الصوت في Safari عند أول لمسة للشاشة
+        document.body.addEventListener('touchstart', function() {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }, false);
     </script>
 </body>
 </html>

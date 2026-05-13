@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo Interactive Player</title>
+    <title>TaTo All-Files Player</title>
     <style>
         :root {
             --bg-color: #000;
@@ -28,7 +28,6 @@
             max-width: 400px;
         }
 
-        /* زر الرفع بتصميم عصري */
         .upload-wrapper {
             margin-bottom: 30px;
         }
@@ -42,6 +41,7 @@
             border: 1px solid #444;
             transition: all 0.3s ease;
             font-size: 14px;
+            display: inline-block;
         }
 
         .upload-btn:hover {
@@ -50,7 +50,6 @@
             transform: scale(1.05);
         }
 
-        /* تصميم الجزيرة التفاعلية المقتبس من image.png */
         .player-island {
             width: 90%;
             max-width: 350px;
@@ -64,16 +63,19 @@
             justify-content: space-between;
             padding: 0 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .album-art {
             width: 42px;
             height: 42px;
             background: linear-gradient(45deg, #1e3c72, #2a5298);
-            border-radius: 10px;
+            border-radius: 12px;
             flex-shrink: 0;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
         }
 
         .song-info {
@@ -89,6 +91,7 @@
             white-space: nowrap;
             display: block;
             opacity: 0.8;
+            text-overflow: ellipsis;
         }
 
         .visualizer {
@@ -96,7 +99,7 @@
             align-items: center;
             gap: 3px;
             height: 25px;
-            width: 50px;
+            width: 60px;
             justify-content: flex-end;
         }
 
@@ -113,15 +116,16 @@
 
     <div class="container">
         <div class="upload-wrapper">
-            <input type="file" id="audioUpload" accept="audio/*" hidden>
-            <label for="audioUpload" class="upload-btn">اختر ملف موسيقى 🎵</label>
+            <!-- تم تغيير accept لتقبل كل أنواع الملفات -->
+            <input type="file" id="audioUpload" accept="*" hidden>
+            <label for="audioUpload" class="upload-btn">اختر أي ملف 📁</label>
         </div>
 
         <div class="player-island" id="player">
-            <div class="album-art" id="art"></div>
+            <div class="album-art" id="art">TaTo</div>
             
             <div class="song-info">
-                <span id="songName">جاهز للتشغيل...</span>
+                <span id="songName">بانتظار الملف...</span>
             </div>
 
             <div class="visualizer" id="visualizer">
@@ -149,57 +153,61 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // عرض اسم الملف
-            songName.textContent = file.name.replace(/\.[^/.]+$/, "");
+            songName.textContent = file.name;
 
             const url = URL.createObjectURL(file);
             audio.src = url;
 
-            // Safari يتطلب بدء الـ AudioContext بعد نقرة
+            // التأكد من تهيئة الصوت لمتصفح Safari
             if (!audioCtx) {
                 initAudio();
             }
             
-            audio.play().catch(err => console.log("Safari Play Error: ", err));
+            // محاولة التشغيل
+            audio.play().catch(err => {
+                console.warn("تنبيه: الملف المختار قد لا يكون ملفاً صوتياً مدعوماً.");
+                songName.textContent = "عذراً، الملف غير مدعوم!";
+            });
         };
 
         function initAudio() {
-            // دعم Safari عبر window.webkitAudioContext
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            
-            const source = audioCtx.createMediaElementSource(audio);
-            source.connect(analyser);
-            analyser.connect(audioCtx.destination);
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                
+                const source = audioCtx.createMediaElementSource(audio);
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
 
-            analyser.fftSize = 64; 
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
+                analyser.fftSize = 64; 
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
 
-            function draw() {
-                requestAnimationFrame(draw);
-                analyser.getByteFrequencyData(dataArray);
+                function draw() {
+                    requestAnimationFrame(draw);
+                    analyser.getByteFrequencyData(dataArray);
 
-                bars.forEach((bar, i) => {
-                    // نأخذ عينات من الترددات المنخفضة والمتوسطة للحصول على حركة جميلة
-                    const value = dataArray[i * 2]; 
-                    const percent = value / 255;
-                    const height = percent * 30;
-                    bar.style.height = Math.max(4, height) + 'px';
-                    // تغيير الشفافية بناءً على قوة الصوت
-                    bar.style.opacity = 0.5 + (percent * 0.5);
-                });
+                    bars.forEach((bar, i) => {
+                        const value = dataArray[i * 2]; 
+                        const percent = value / 255;
+                        const height = percent * 30;
+                        bar.style.height = Math.max(4, height) + 'px';
+                        bar.style.opacity = 0.5 + (percent * 0.5);
+                    });
+                }
+
+                draw();
+            } catch (e) {
+                console.error("خطأ في تهيئة الصوت:", e);
             }
-
-            draw();
         }
 
-        // تفعيل الصوت في Safari عند أول لمسة للشاشة
-        document.body.addEventListener('touchstart', function() {
+        // تحسين لمتصفحات الجوال (Safari iOS)
+        document.addEventListener('click', function() {
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-        }, false);
+        }, { once: false });
     </script>
 </body>
 </html>

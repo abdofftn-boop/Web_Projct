@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>PhonkCIAN - Parano! (Slowed+Reverb) | ميديافونك تفاعلي</title>
+    <title>PhonkCIAN - Parano! (Slowed+Reverb) | متوافق مع iOS</title>
     <style>
         * {
             margin: 0;
@@ -11,7 +11,6 @@
             box-sizing: border-box;
             user-select: none;
         }
-
         body {
             min-height: 100vh;
             background: radial-gradient(circle at 20% 30%, #0a0c12, #030205);
@@ -22,7 +21,6 @@
             padding: 1.5rem;
             overflow-x: hidden;
         }
-
         .glow-bg {
             position: fixed;
             top: 0;
@@ -34,7 +32,6 @@
             pointer-events: none;
             z-index: 0;
         }
-
         .phonk-player {
             max-width: 1100px;
             width: 100%;
@@ -47,7 +44,6 @@
             transition: all 0.3s ease;
             z-index: 2;
         }
-
         .song-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -57,7 +53,6 @@
         .song-title {
             font-size: 2.2rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
             background: linear-gradient(135deg, #ff4d8c, #b9266f, #ffb347);
             background-clip: text;
             -webkit-background-clip: text;
@@ -81,7 +76,6 @@
             margin-top: 8px;
             border: 0.5px solid #ff3a7a;
         }
-
         .viz-container {
             background: rgba(0, 0, 0, 0.45);
             border-radius: 2rem;
@@ -98,7 +92,6 @@
             background: #010008;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 0 8px #ff3a7a;
         }
-
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -127,8 +120,6 @@
         }
         .btn-primary:hover {
             transform: scale(1.02);
-            background: linear-gradient(95deg, #d81b60, #9c2e77);
-            box-shadow: 0 0 15px #ff4d8c;
         }
         .btn:hover {
             background: rgba(80, 40, 80, 0.9);
@@ -163,6 +154,7 @@
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
+            max-width: 90%;
         }
         .slider-panel {
             display: flex;
@@ -190,9 +182,6 @@
             height: 4px;
             border-radius: 10px;
             -webkit-appearance: none;
-        }
-        input[type="range"]:focus {
-            outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -228,8 +217,8 @@
 <div class="phonk-player">
     <div class="song-header">
         <div class="song-title">PARANO! (slowed + reverb)</div>
-        <div class="song-artist">PHONKCIAN · ETERNAL XLKZ VIBE</div>
-        <div class="tag">⚡ SLOWED | 🎧 REVERB | 🔮 VISUALIZER</div>
+        <div class="song-artist">PHONKCIAN · ETERNAL XLKZ</div>
+        <div class="tag">⚡ SLOWED | 🎧 REVERB | 🔮 VISUALIZER | 📱 iOS READY</div>
     </div>
 
     <div class="viz-container">
@@ -237,42 +226,42 @@
     </div>
 
     <div class="controls">
-        <button id="playBtn" class="btn btn-primary">▶ تشغيل / استئناف</button>
+        <button id="playBtn" class="btn btn-primary">▶ تشغيل</button>
         <button id="pauseBtn" class="btn">⏸ إيقاف مؤقت</button>
         <button id="stopBtn" class="btn">⏹ إيقاف كامل</button>
-        <label class="file-label" for="audioUpload">📁 رفع ملف صوتي (MP3, WAV, M4A)</label>
+        <label class="file-label" for="audioUpload">📁 رفع ملف (MP3, WAV, M4A)</label>
         <input type="file" id="audioUpload" accept="audio/mpeg, audio/wav, audio/ogg, audio/mp3, audio/aac, audio/m4a, audio/x-m4a">
     </div>
 
     <div class="slider-panel">
         <div class="effect-control">
-            <label>🐌 SLOW MOTION (سرعة التشغيل)</label>
+            <label>🐌 SLOW (speed)</label>
             <input type="range" id="speedSlider" min="0.5" max="1.2" step="0.01" value="0.78">
             <div class="value-display" id="speedVal">0.78x</div>
         </div>
         <div class="effect-control">
-            <label>🌀 REVERB / ECHO (صدى)</label>
+            <label>🌀 REVERB</label>
             <input type="range" id="reverbSlider" min="0" max="0.85" step="0.01" value="0.55">
             <div class="value-display" id="reverbVal">0.55</div>
         </div>
         <div class="effect-control">
-            <label>🎛 LOW-PASS (ظلام الصوت)</label>
+            <label>🎛 LOW-PASS</label>
             <input type="range" id="filterSlider" min="400" max="8000" step="50" value="2800">
             <div class="value-display" id="filterVal">2800 Hz</div>
         </div>
     </div>
 
     <div id="statusMsg" class="status">
-        🎧 حمّل ملفاً صوتياً (MP3/WAV) لتجربة الأجواء البطيئة والمؤثرات والمرئيات
+        🎧 1. اختر ملفاً صوتياً<br>2. اضغط "تشغيل" لبدء التجربة الفونكية
     </div>
     <footer>
-        🖤 متوافق مع Safari & Chrome | إشارة صوتية حية + تأثيرات فورية | اسحب أي ملف واختبر الصوت
+        🖤 دعم كامل لنظام iOS (iPhone/iPad) | اضغط تشغيل بعد رفع الملف | المؤثرات تعمل لحظياً
     </footer>
 </div>
 
 <script>
     (function(){
-        // --- عناصر DOM ---
+        // --- عناصر الواجهة ---
         const canvas = document.getElementById('audioVisualizer');
         const ctx = canvas.getContext('2d');
         const playBtn = document.getElementById('playBtn');
@@ -286,25 +275,25 @@
         const reverbVal = document.getElementById('reverbVal');
         const filterVal = document.getElementById('filterVal');
         const statusDiv = document.getElementById('statusMsg');
-
-        // --- متغيرات الصوت العامة ---
-        let audioContext = null;          // سيبدأ بعد أول تفاعل (رفع ملف أو زر تشغيل)
-        let mediaElement = null;          // عنصر Audio
-        let mediaSourceNode = null;       // MediaElementSourceNode
-        let analyserNode = null;          // لتحليل الترددات (visualizer)
-        let filterNode = null;             // مرشح low-pass
-        let dryGain = null;                // الإشارة الجافة (direct)
-        let wetGain = null;                // إشارة الصدى
-        let delayNode = null;              // عقدة التأخير للصدى
-        let feedbackGain = null;           // لتغذية الصدى
-        let outputGain = null;              // نقطة الالتقاء النهائية قبل الـ analyser
+        
+        // --- المتغيرات الأساسية ---
+        let audioContext = null;           // سيتم إنشاؤه فقط عند أول ضغطة تشغيل
+        let mediaElement = null;           // عنصر Audio الذي سنستخدمه
+        let mediaSourceNode = null;
+        let analyserNode = null;
+        let filterNode = null;
+        let dryGain = null;
+        let wetGain = null;
+        let delayNode = null;
+        let feedbackGain = null;
+        let outputGain = null;
         
         let isPlaying = false;
-        let currentAudioUrl = null;
+        let currentFileBlobUrl = null;     // رابط الملف المرفوع مؤقتاً
         let animationId = null;
-        let isContextInitialized = false;
-
-        // ضبط حجم Canvas ديناميكياً
+        let contextReady = false;
+        
+        // ضبط حجم الرسم
         function resizeCanvas() {
             const container = canvas.parentElement;
             const width = container.clientWidth;
@@ -313,52 +302,43 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
-        // --- إنشاء AudioContext وكامل شبكة العقد (تسمى مرة واحدة فقط عند أول تفاعل حقيقي للمستخدم) ---
-        async function initAudioGraph() {
-            if (isContextInitialized && audioContext && audioContext.state !== 'closed') {
-                // إذا كان السياق معلقاً نستأنفه
+        
+        // --- بناء شبكة المؤثرات الصوتية (لا تُستدعى إلا عند أول تشغيل) ---
+        async function buildAudioGraph() {
+            if (audioContext && contextReady) {
                 if (audioContext.state === 'suspended') await audioContext.resume();
                 return true;
             }
             try {
-                // في حال وجود سياق قديم نغلقه
+                // نغلق أي سياق قديم
                 if (audioContext && audioContext.state !== 'closed') await audioContext.close();
-                
+                // استخدام webkitAudioContext للتوافق مع iOS
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 
-                // 1. عقدة التحليل
+                // عقدة التحليل
                 analyserNode = audioContext.createAnalyser();
                 analyserNode.fftSize = 256;
                 
-                // 2. مرشح low-pass لإعطاء إحساس مظلم وبطيء
+                // مرشح low-pass (عظيم للأجواء البطيئة)
                 filterNode = audioContext.createBiquadFilter();
                 filterNode.type = "lowpass";
                 filterNode.frequency.value = parseFloat(filterSlider.value);
-                filterNode.Q = 5;
+                filterNode.Q = 6;
                 
-                // 3. عقد الصدى (reverb بسيط باستخدام تأخير مع تغذية)
+                // عقد الصدى (reverb بسيط مع تغذية)
                 delayNode = audioContext.createDelay();
-                delayNode.delayTime.value = 0.38;  // صدى عميق
+                delayNode.delayTime.value = 0.38;
                 feedbackGain = audioContext.createGain();
-                feedbackGain.gain.value = 0.5;      // مستوى التغذية الراجعة
-                
-                // توصيل حلقة الصدى: delayNode -> feedbackGain -> delayNode (feedback loop)
+                feedbackGain.gain.value = 0.52;
                 delayNode.connect(feedbackGain);
                 feedbackGain.connect(delayNode);
                 
-                // 4. Gains للخلط: الجاف (Dry) والمبلل (Wet)
+                // خلط الإشارة الجافة والمبللة
                 dryGain = audioContext.createGain();
                 wetGain = audioContext.createGain();
-                outputGain = audioContext.createGain();    // نقطة تجميع قبل المحلل
+                outputGain = audioContext.createGain();
                 
-                // ضبط القيم الأولية
-                dryGain.gain.value = 1 - parseFloat(reverbSlider.value) * 0.7;
-                wetGain.gain.value = parseFloat(reverbSlider.value);
-                
-                // توصيل الإشارة: من المرشح => (التفرع إلى dryGain و delayNode)
-                // ثم dryGain و wetGain (الخارج من delayNode) يذهبان إلى outputGain
-                // ثم outputGain -> analyser -> destination
+                // توصيل المسار: filterNode -> dryGain / delayNode -> wetGain -> outputGain
                 filterNode.connect(dryGain);
                 filterNode.connect(delayNode);
                 delayNode.connect(wetGain);
@@ -367,168 +347,156 @@
                 outputGain.connect(analyserNode);
                 analyserNode.connect(audioContext.destination);
                 
-                isContextInitialized = true;
+                // ضبط القيم الأولية
+                updateReverbMix();
+                updateFilter();
+                
+                contextReady = true;
                 return true;
             } catch(e) {
-                console.error("خطأ في بناء graph الصوتي:", e);
-                statusDiv.innerText = "❌ متصفحك لا يدعم Web Audio API كاملاً.";
+                console.error("فشل بناء graph الصوتي:", e);
+                statusDiv.innerText = "❌ متصفحك لا يدعم Web Audio API المطلوب.";
                 return false;
             }
         }
         
-        // --- ربط عنصر الصوت الحالي بالـ AudioGraph ---
+        // --- ربط mediaElement بالـ AudioGraph ---
         async function connectMediaToGraph() {
-            if (!audioContext || !mediaElement) return false;
+            if (!audioContext || !mediaElement || !contextReady) return false;
             try {
-                // إذا كان هناك مصدر سابق، فصله
                 if (mediaSourceNode) {
                     try { mediaSourceNode.disconnect(); } catch(e) {}
                 }
                 mediaSourceNode = audioContext.createMediaElementSource(mediaElement);
-                // المسار: mediaSourceNode -> filterNode (ثم باقي العقد موصولة مسبقاً)
                 mediaSourceNode.connect(filterNode);
                 return true;
             } catch(e) {
-                console.error("فشل توصيل media element:", e);
+                console.error("خطأ في ربط media element:", e);
                 return false;
             }
         }
         
-        // --- تحديث سرعة التشغيل (slowed) ---
-        function updatePlaybackRate() {
-            if (mediaElement) {
-                const val = parseFloat(speedSlider.value);
-                mediaElement.playbackRate = val;
-                speedVal.innerText = val.toFixed(2) + 'x';
+        // --- دالة التشغيل الرئيسية (يتم استدعاؤها بنقرة المستخدم) ---
+        async function startPlayback() {
+            // 1. التأكد من وجود ملف تم رفعه
+            if (!mediaElement || !currentFileBlobUrl) {
+                statusDiv.innerText = "⚠️ يرجى اختيار ملف صوتي أولاً باستخدام زر الرفع.";
+                return;
+            }
+            
+            // 2. بناء الـ AudioContext (سيحدث فقط في أول مرة أو بعد إعادة تعيين)
+            const graphOk = await buildAudioGraph();
+            if (!graphOk) return;
+            
+            // 3. التأكد من ربط الـ media element بالـ graph (في حال تم تغيير الملف مؤخراً)
+            await connectMediaToGraph();
+            
+            // 4. استئناف السياق إن كان معلقاً (هام جداً في iOS)
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+            
+            // 5. تطبيق السرعة والمؤثرات
+            updatePlaybackRate();
+            updateFilter();
+            updateReverbMix();
+            
+            // 6. بدء التشغيل
+            try {
+                await mediaElement.play();
+                isPlaying = true;
+                statusDiv.innerText = "🎵 الآن يعمل: Slowed + Reverb + Low-pass | صوت الفونك النقي";
+                startVisualizerLoop();
+            } catch(err) {
+                console.warn(err);
+                statusDiv.innerText = "⚠️ فشل التشغيل: " + (err.message || "تأكد من الضغط على زر التشغيل بعد رفع الملف");
+                isPlaying = false;
             }
         }
         
-        // --- تحديث مرشح low-pass ---
-        function updateFilter() {
-            if (filterNode) {
-                const freq = parseFloat(filterSlider.value);
-                filterNode.frequency.value = freq;
-                filterVal.innerText = freq + ' Hz';
-            }
-        }
-        
-        // --- تحديث مستوى الصدى (Reverb mix) ---
-        function updateReverbMix() {
-            if (dryGain && wetGain) {
-                const wet = parseFloat(reverbSlider.value);
-                wetGain.gain.value = wet;
-                // خفض الجاف قليلاً لإبراز الصدى
-                dryGain.gain.value = Math.max(0.25, 1 - wet * 0.7);
-                reverbVal.innerText = wet.toFixed(2);
-            }
-        }
-        
-        // --- تحميل ملف صوتي وربطه ---
-        async function loadAudioFile(file) {
-            if (!file) return false;
-            if (!file.type.startsWith('audio/')) {
+        // --- رفع الملف (لا يبدأ التشغيل، فقط يجهز mediaElement) ---
+        function prepareAudioFile(file) {
+            if (!file || !file.type.startsWith('audio/')) {
                 statusDiv.innerText = "⚠️ الرجاء اختيار ملف صوتي صالح (MP3, WAV, M4A).";
                 return false;
             }
+            // إلغاء الرابط القديم
+            if (currentFileBlobUrl) URL.revokeObjectURL(currentFileBlobUrl);
+            const url = URL.createObjectURL(file);
+            currentFileBlobUrl = url;
             
-            // 1. تهيئة graph الصوتي إذا لم يحدث (بسبب تفاعل المستخدم برفع الملف)
-            const graphReady = await initAudioGraph();
-            if (!graphReady) return false;
-            
-            // 2. إلغاء الرابط القديم
-            if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
-            const fileUrl = URL.createObjectURL(file);
-            currentAudioUrl = fileUrl;
-            
-            // 3. إنشاء عنصر audio جديد
+            // إنشاء عنصر audio جديد
             if (mediaElement) {
                 mediaElement.pause();
                 mediaElement.src = '';
             }
             mediaElement = new Audio();
-            mediaElement.src = fileUrl;
+            mediaElement.src = url;
             mediaElement.crossOrigin = "anonymous";
             mediaElement.preload = "auto";
             mediaElement.loop = false;
-            updatePlaybackRate();   // تطبيق السرعة من السلايدر
+            
+            // ضبط السرعة من السلايدر (قبل التشغيل)
+            updatePlaybackRate();
             
             // أحداث
             mediaElement.onended = () => {
                 isPlaying = false;
-                statusDiv.innerText = "⏹️ انتهى التشغيل. يمكنك رفع ملف آخر أو إعادة التشغيل.";
+                statusDiv.innerText = "⏹️ انتهى التشغيل. اضغط تشغيل مرة أخرى للإعادة.";
                 stopVisualizerLoop();
             };
             mediaElement.onerror = () => {
-                statusDiv.innerText = "❌ خطأ في تحميل الملف. تأكد من الصيغة (MP3/WAV/M4A).";
+                statusDiv.innerText = "❌ خطأ في تحميل الملف. تأكد من الصيغة.";
                 stopVisualizerLoop();
             };
             
-            // 4. توصيل media element بمخطط الصوت
-            const connected = await connectMediaToGraph();
-            if (!connected) {
-                statusDiv.innerText = "⚠️ مشكلة في توصيل مسار الصوت. حاول مرة أخرى.";
-                return false;
-            }
-            
-            // 5. تحديث المؤثرات بشكل فعال
-            updateFilter();
-            updateReverbMix();
-            
-            // 6. استئناف السياق إن كان معلقاً
-            if (audioContext.state === 'suspended') await audioContext.resume();
-            
-            // 7. تشغيل تلقائي (لكن بعض المتصفحات تمنع auto-play، لذلك قد يحتاج المستخدم للضغط على زر التشغيل)
-            try {
-                await mediaElement.play();
-                isPlaying = true;
-                statusDiv.innerText = `🎵 الآن تشغيل: ${file.name} | Slowed + Reverb نشطة 🎵`;
-                startVisualizerLoop();
-            } catch (autoplayErr) {
-                statusDiv.innerText = `✅ جاهز للتشغيل (اضغط ▶️): ${file.name}`;
-                isPlaying = false;
-                // لا نبدأ visualizer حتى التشغيل
-            }
+            statusDiv.innerText = `✅ تم تحميل: ${file.name}. اضغط زر "تشغيل" لبدء المؤثرات.`;
+            // إذا كان السياق موجوداً مسبقاً وتم رفع ملف جديد، نحتاج إعادة ربطه عند التشغيل القادم
+            // سيتم إعادة الربط تلقائياً في startPlayback عبر connectMediaToGraph()
             return true;
         }
         
-        // --- تشغيل الصوت الحالي ---
-        async function playCurrentAudio() {
-            if (!mediaElement) {
-                statusDiv.innerText = "⚠️ يرجى رفع ملف صوتي أولاً باستخدام الزر.";
-                return;
-            }
-            if (!isContextInitialized) {
-                const ok = await initAudioGraph();
-                if (!ok) return;
-            }
-            // تأكد من توصيل العقد (في حال تم رفع الملف من قبل وتم قطع الاتصال لسبب ما)
-            if (mediaSourceNode === null || mediaSourceNode.mediaElement !== mediaElement) {
-                await connectMediaToGraph();
-            }
-            
-            if (audioContext.state === 'suspended') await audioContext.resume();
-            
-            try {
-                await mediaElement.play();
-                isPlaying = true;
-                statusDiv.innerText = "🔊 جاري التشغيل بتأثيرات Slowed + Reverb";
-                startVisualizerLoop();
-            } catch(e) {
-                statusDiv.innerText = "⚠️ تعذر التشغيل: " + (e.message || "يجب التفاعل مع الصفحة أولاً");
-                console.warn(e);
+        // --- تحديثات المؤثرات ---
+        function updatePlaybackRate() {
+            if (mediaElement) {
+                const val = parseFloat(speedSlider.value);
+                mediaElement.playbackRate = val;
+                speedVal.innerText = val.toFixed(2) + 'x';
+            } else {
+                speedVal.innerText = speedSlider.value;
             }
         }
         
+        function updateFilter() {
+            if (filterNode) {
+                const freq = parseFloat(filterSlider.value);
+                filterNode.frequency.value = freq;
+                filterVal.innerText = freq + ' Hz';
+            } else {
+                filterVal.innerText = filterSlider.value;
+            }
+        }
+        
+        function updateReverbMix() {
+            if (dryGain && wetGain) {
+                const wet = parseFloat(reverbSlider.value);
+                wetGain.gain.value = wet;
+                dryGain.gain.value = Math.max(0.2, 1 - wet * 0.7);
+                reverbVal.innerText = wet.toFixed(2);
+            } else {
+                reverbVal.innerText = reverbSlider.value;
+            }
+        }
+        
+        // --- التحكم ---
         function pauseAudio() {
             if (mediaElement && !mediaElement.paused) {
                 mediaElement.pause();
                 isPlaying = false;
-                statusDiv.innerText = "⏸ توقف مؤقت";
+                statusDiv.innerText = "⏸ تم الإيقاف المؤقت";
                 stopVisualizerLoop();
-            } else if (mediaElement && mediaElement.paused) {
-                // لا شيء
-            } else {
-                statusDiv.innerText = "لا يوجد ملف مشغل";
+            } else if (!mediaElement) {
+                statusDiv.innerText = "لا يوجد ملف مشغّل";
             }
         }
         
@@ -537,18 +505,17 @@
                 mediaElement.pause();
                 mediaElement.currentTime = 0;
                 isPlaying = false;
-                statusDiv.innerText = "⏹ توقف كامل";
+                statusDiv.innerText = "⏹ توقف كامل، اضغط تشغيل من البداية";
                 stopVisualizerLoop();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             } else {
-                statusDiv.innerText = "لا توجد أي أغنية";
+                statusDiv.innerText = "لا توجد أغنية محملة";
             }
         }
         
-        // --- رسم visualizer باستخدام محلل الترددات ---
+        // --- Visualizer Loop ---
         function startVisualizerLoop() {
             if (animationId) cancelAnimationFrame(animationId);
-            
             function draw() {
                 if (!analyserNode || !isPlaying || !mediaElement || mediaElement.paused) {
                     animationId = requestAnimationFrame(draw);
@@ -560,26 +527,24 @@
                 const w = canvas.width;
                 const h = canvas.height;
                 ctx.clearRect(0, 0, w, h);
-                
                 const barCount = 48;
                 const step = Math.max(1, Math.floor(dataArray.length / barCount));
                 const barWidth = w / barCount;
-                
                 for (let i = 0; i < barCount; i++) {
                     let sum = 0;
                     for (let j = 0; j < step; j++) {
                         const idx = i * step + j;
                         if (idx < dataArray.length) sum += dataArray[idx];
                     }
-                    let avg = sum / step;
+                    const avg = sum / step;
                     const percent = avg / 255;
                     const barHeight = Math.max(3, percent * h * 0.85);
                     const x = i * barWidth;
                     const grad = ctx.createLinearGradient(x, h, x, h - barHeight);
                     grad.addColorStop(0, '#ff3a7a');
-                    grad.addColorStop(1, '#ffafcf');
+                    grad.addColorStop(1, '#ffb3d1');
                     ctx.fillStyle = grad;
-                    ctx.fillRect(x, h - barHeight, barWidth - 1.5, barHeight);
+                    ctx.fillRect(x, h - barHeight, barWidth - 1.2, barHeight);
                     ctx.shadowBlur = 4;
                     ctx.shadowColor = '#ff4d8c';
                 }
@@ -596,49 +561,44 @@
             }
         }
         
-        // --- استماع للأحداث ---
-        function bindUI() {
-            playBtn.addEventListener('click', async () => {
-                if (!mediaElement && audioUpload.files.length === 0) {
-                    statusDiv.innerText = "🎼 حمّل ملفاً صوتياً أولاً باستخدام زر الرفع";
-                    return;
-                }
-                await playCurrentAudio();
+        // --- ربط الأحداث ---
+        function bindEvents() {
+            playBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await startPlayback();
             });
             pauseBtn.addEventListener('click', pauseAudio);
             stopBtn.addEventListener('click', stopAudio);
-            audioUpload.addEventListener('change', async (e) => {
-                if (e.target.files.length > 0) {
-                    const file = e.target.files[0];
-                    await loadAudioFile(file);
+            audioUpload.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    prepareAudioFile(e.target.files[0]);
                 }
             });
-            speedSlider.addEventListener('input', () => updatePlaybackRate());
-            filterSlider.addEventListener('input', () => updateFilter());
-            reverbSlider.addEventListener('input', () => updateReverbMix());
+            speedSlider.addEventListener('input', () => {
+                updatePlaybackRate();
+            });
+            filterSlider.addEventListener('input', () => {
+                updateFilter();
+            });
+            reverbSlider.addEventListener('input', () => {
+                updateReverbMix();
+            });
         }
         
-        // --- تأكيد أن أي تفاعل على الصفحة يسمح باستئناف السياق (لمساعدة Safari) ---
-        async function resumeAudioContextOnUserGesture() {
+        // --- إيماءة مساعدة لاستئناف السياق في iOS عند أي نقرة على الصفحة (تحسباً) ---
+        async function resumeContextOnTouch() {
             if (audioContext && audioContext.state === 'suspended') {
                 await audioContext.resume();
-                statusDiv.innerText = "✓ تم تفعيل الصوت، يمكنك رفع ملف أو تشغيل";
+                statusDiv.innerText = "✓ تم تفعيل الصوت، يمكنك الضغط على تشغيل الآن.";
             }
         }
-        window.addEventListener('click', resumeAudioContextOnUserGesture);
-        window.addEventListener('touchstart', resumeAudioContextOnUserGesture);
+        document.body.addEventListener('touchstart', resumeContextOnTouch);
+        document.body.addEventListener('click', resumeContextOnTouch);
         
-        // بدء التطبيق
-        bindUI();
-        statusDiv.innerText = "🎤 ارفع ملف MP3/WAV لبدء التجربة الفونكية | متوافق مع Safari و Chrome";
+        // بدء التشغيل
+        bindEvents();
         resizeCanvas();
-        
-        // تنظيف عند الخروج
-        window.addEventListener('beforeunload', () => {
-            if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
-            if (mediaElement) mediaElement.src = '';
-            if (audioContext) audioContext.close();
-        });
+        statusDiv.innerHTML = "📱 iPhone/iOS جاهز: اختر ملفاً ثم اضغط (تشغيل) لسماع الصوت مع التأثيرات.";
     })();
 </script>
 </body>

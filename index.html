@@ -3,211 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaTo All-Files Player</title>
+    <title>مشغل عائلة TaTo</title>
     <style>
-        :root {
-            --bg-color: #000;
-            --island-bg: #111;
-            --accent-color: #00f2fe;
-        }
-
+        /* التصميم (CSS) */
         body {
-            background-color: var(--bg-color);
+            background-color: #0f0f0f;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
         }
 
-        .container {
+        .player-card {
+            background: linear-gradient(145deg, #1e1e1e, #121212);
+            padding: 40px;
+            border-radius: 30px;
             text-align: center;
-            width: 100%;
+            width: 85%;
             max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 1px solid #333;
         }
 
-        .upload-wrapper {
-            margin-bottom: 30px;
+        h2 {
+            color: #1DB954;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
         }
 
         .upload-btn {
-            background: #222;
-            color: #eee;
-            padding: 12px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            border: 1px solid #444;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            display: inline-block;
-        }
-
-        .upload-btn:hover {
-            background: #fff;
+            background-color: #ffffff;
             color: #000;
-            transform: scale(1.05);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.2s;
+            margin-bottom: 30px;
         }
 
-        .player-island {
-            width: 90%;
-            max-width: 350px;
-            height: 65px;
-            background: var(--island-bg);
-            border: 1px solid #222;
-            border-radius: 40px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        .upload-btn:active {
+            transform: scale(0.95);
         }
 
-        .album-art {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
-            border-radius: 12px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 10px;
+        #file-input {
+            display: none;
         }
 
-        .song-info {
-            flex-grow: 1;
-            margin: 0 15px;
-            text-align: right;
-            overflow: hidden;
+        .song-details {
+            margin: 20px 0;
         }
 
-        #songName {
-            color: #fff;
-            font-size: 13px;
+        #song-name {
+            font-size: 1.1rem;
+            color: #bbb;
             white-space: nowrap;
-            display: block;
-            opacity: 0.8;
+            overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .visualizer {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            height: 25px;
-            width: 60px;
-            justify-content: flex-end;
+        audio {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 10px;
+            filter: invert(90%) hue-rotate(180deg) brightness(1.5);
         }
 
-        .bar {
-            width: 3px;
-            height: 4px;
-            background: var(--accent-color);
-            border-radius: 10px;
-            transition: height 0.05s linear;
+        .visualizer {
+            height: 5px;
+            background: #1DB954;
+            width: 0%;
+            transition: width 0.1s;
+            border-radius: 5px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="upload-wrapper">
-            <!-- تم تغيير accept لتقبل كل أنواع الملفات -->
-            <input type="file" id="audioUpload" accept="*" hidden>
-            <label for="audioUpload" class="upload-btn">اختر أي ملف 📁</label>
-        </div>
-
-        <div class="player-island" id="player">
-            <div class="album-art" id="art">TaTo</div>
-            
-            <div class="song-info">
-                <span id="songName">بانتظار الملف...</span>
-            </div>
-
-            <div class="visualizer" id="visualizer">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-        </div>
+    <div class="player-card">
+        <h2>TaTo Player</h2>
         
-        <audio id="audioSource"></audio>
+        <div class="upload-section">
+            <label for="file-input" class="upload-btn">
+                اختر ملف صوتي
+            </label>
+            <input type="file" id="file-input" accept="audio/*">
+        </div>
+
+        <div class="song-details">
+            <div id="song-name">جاهز للتشغيل...</div>
+            <div class="visualizer" id="progress-bar"></div>
+        </div>
+
+        <audio id="main-audio" controls></audio>
     </div>
 
     <script>
-        const audioUpload = document.getElementById('audioUpload');
-        const audio = document.getElementById('audioSource');
-        const bars = document.querySelectorAll('.bar');
-        const songName = document.getElementById('songName');
-        
-        let audioCtx;
-        let analyser;
+        // البرمجة (JavaScript)
+        const fileInput = document.getElementById('file-input');
+        const audio = document.getElementById('main-audio');
+        const songName = document.getElementById('song-name');
+        const progressBar = document.getElementById('progress-bar');
 
-        audioUpload.onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files;
+            if (file) {
+                // عرض اسم الملف
+                songName.textContent = file.name;
 
-            songName.textContent = file.name;
+                // إنشاء رابط للملف المحمل محلياً
+                const url = URL.createObjectURL(file);
+                audio.src = url;
 
-            const url = URL.createObjectURL(file);
-            audio.src = url;
-
-            // التأكد من تهيئة الصوت لمتصفح Safari
-            if (!audioCtx) {
-                initAudio();
+                // البدء بالتشغيل فوراً
+                audio.play().catch(error => {
+                    console.log("التشغيل التلقائي يحتاج تفاعل المستخدم أولاً.");
+                });
             }
-            
-            // محاولة التشغيل
-            audio.play().catch(err => {
-                console.warn("تنبيه: الملف المختار قد لا يكون ملفاً صوتياً مدعوماً.");
-                songName.textContent = "عذراً، الملف غير مدعوم!";
-            });
-        };
+        });
 
-        function initAudio() {
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                
-                const source = audioCtx.createMediaElementSource(audio);
-                source.connect(analyser);
-                analyser.connect(audioCtx.destination);
+        // تحديث شريط بسيط للجمالية أثناء العمل
+        audio.addEventListener('timeupdate', function() {
+            const percentage = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percentage + '%';
+        });
 
-                analyser.fftSize = 64; 
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-
-                function draw() {
-                    requestAnimationFrame(draw);
-                    analyser.getByteFrequencyData(dataArray);
-
-                    bars.forEach((bar, i) => {
-                        const value = dataArray[i * 2]; 
-                        const percent = value / 255;
-                        const height = percent * 30;
-                        bar.style.height = Math.max(4, height) + 'px';
-                        bar.style.opacity = 0.5 + (percent * 0.5);
-                    });
-                }
-
-                draw();
-            } catch (e) {
-                console.error("خطأ في تهيئة الصوت:", e);
-            }
-        }
-
-        // تحسين لمتصفحات الجوال (Safari iOS)
-        document.addEventListener('click', function() {
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }, { once: false });
+        // تنظيف الذاكرة عند تغيير الأغنية
+        audio.addEventListener('play', () => {
+             if (audio.src.startsWith('blob:')) {
+                 // الروابط المؤقتة فعالة جداً للهواتف
+             }
+        });
     </script>
 </body>
 </html>

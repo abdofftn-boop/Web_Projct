@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PhonkCIAN - PARANO! | Bass Shake + Pure Slow + Reverb</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0c12, #030205);
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            overflow-x: hidden;
+            transition: transform 0.05s linear;
+        }
+
+        /* تأثير اهتزاز سريع (يضاف ديناميكياً) */
+        body.shake {
+            animation: quickShake 0.08s ease-in-out 0s 2;
+        }
+        @keyframes quickShake {
+            0% { transform: translate(1px, 1px) rotate(0.2deg); }
+            50% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+            100% { transform: translate(0,0) rotate(0); }
+        }
+
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, rgba(255, 0, 100, 0.02) 0px, rgba(255, 0, 100, 0.02) 2px, transparent 2px, transparent 8px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .phonk-player {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(12, 10, 20, 0.7);
+            backdrop-filter: blur(16px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 70, 140, 0.5);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 80, 120, 0.2), 0 0 20px rgba(255, 0, 100, 0.3);
+            padding: 2rem 1.8rem;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .song-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px dashed rgba(255, 100, 150, 0.5);
+            padding-bottom: 1rem;
+        }
+        .song-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff4d8c, #b9266f, #ffb347);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 70, 140, 0.5);
+        }
+        .song-artist {
+            font-size: 1rem;
+            color: #cfb3ff;
+            letter-spacing: 2px;
+            margin-top: 6px;
+        }
+        .tag {
+            display: inline-block;
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #ff98c0;
+            margin-top: 8px;
+            border: 0.5px solid #ff3a7a;
+        }
+
+        .viz-container {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 2rem;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 100, 150, 0.4);
+            box-shadow: 0 0 15px rgba(255, 0, 100, 0.2);
+        }
+        canvas#audioVisualizer {
+            width: 100%;
+            height: 200px;
+            display: block;
+            border-radius: 1.2rem;
+            background: #010008;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 0 8px #ff3a7a;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.8rem 0;
+        }
+        .btn {
+            background: rgba(20, 15, 35, 0.8);
+            border: 1px solid #ff4d8c;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 0.7rem 1.6rem;
+            border-radius: 60px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #c2185b, #8e2c6d);
+            border-color: #ff80ab;
+            box-shadow: 0 0 10px #ff3a7a;
+        }
+        .btn-primary:hover {
+            transform: scale(1.02);
+        }
+        .file-label {
+            background: #2a1e3c;
+            border: 1px solid #b96f9f;
+            padding: 0.7rem 1.6rem;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        input[type="file"] { display: none; }
+        .status {
+            text-align: center;
+            color: #e2c8ff;
+            font-size: 0.85rem;
+            margin: 12px 0 0;
+            background: rgba(0,0,0,0.5);
+            padding: 8px;
+            border-radius: 2rem;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .slider-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1rem 0 0.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 2rem;
+            padding: 0.8rem 1.2rem;
+        }
+        .effect-control {
+            flex: 1;
+            min-width: 120px;
+        }
+        .effect-control label {
+            font-size: 0.7rem;
+            color: #ffafcf;
+            display: block;
+            margin-bottom: 4px;
+        }
+        input[type="range"] {
+            width: 100%;
+            background: #3a2a4a;
+            height: 4px;
+            border-radius: 10px;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #ff5e9e;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .value-display {
+            color: #ffb7d0;
+            font-size: 0.7rem;
+            text-align: right;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7a62a5;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 0.5px solid rgba(255,100,150,0.3);
+        }
+        @media (max-width: 650px) {
+            .phonk-player { padding: 1.2rem; }
+            .song-title { font-size: 1.6rem; }
+            .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="glow-bg"></div>
+<div class="phonk-player">
+    <div class="song-header">
+        <div class="song-title">PARANO! (slowed + pure reverb)</div>
+        <div class="song-artist">PHONKCIAN · ETERNAL XLKZ</div>
+        <div class="tag">⚡ SLOWED | 🎧 CLEAN REVERB | 🔮 BASS SHAKE</div>
+    </div>
+
+    <div class="viz-container">
+        <canvas id="audioVisualizer" width="800" height="200"></canvas>
+    </div>
+
+    <div class="controls">
+        <button id="playBtn" class="btn btn-primary">▶ تشغيل</button>
+        <button id="pauseBtn" class="btn">⏸ إيقاف</button>
+        <button id="stopBtn" class="btn">⏹ إعادة ضبط</button>
+        <label class="file-label" for="audioUpload">📁 رفع ملف صوتي (MP3, WAV, M4A)</label>
+        <input type="file" id="audioUpload" accept="audio/mpeg,audio/wav,audio/mp3,audio/m4a,audio/x-m4a">
+    </div>
+
+    <div class="slider-panel">
+        <div class="effect-control">
+            <label>🐌 سرعة البطء (Slow)</label>
+            <input type="range" id="speedSlider" min="0.5" max="1.2" step="0.01" value="0.78">
+            <div class="value-display" id="speedVal">0.78x</div>
+        </div>
+        <div class="effect-control">
+            <label>🌀 صدى نقي (Reverb)</label>
+            <input type="range" id="reverbSlider" min="0" max="0.8" step="0.01" value="0.45">
+            <div class="value-display" id="reverbVal">0.45</div>
+        </div>
+        <div class="effect-control">
+            <label>🎛 عمق الصوت (Low-pass)</label>
+            <input type="range" id="filterSlider" min="600" max="8000" step="50" value="2800">
+            <div class="value-display" id="filterVal">2800 Hz</div>
+        </div>
+    </div>
+
+    <div id="statusMsg" class="status">
+        🎧 1. اختر ملفاً  |  2. اضغط "تشغيل"  |  3. استمتع بصوت نقي + اهتزاز عند الإيقاع
+    </div>
+    <footer>🖤 تحسين كامل: لا تداخل صوتي | مربعات متفاعلة | اهتزاز عند قوة البيس | يدعم iPhone و Safari</footer>
+</div>
+
+<script>
+    (function(){
+        // --- عناصر DOM ---
+        const canvas = document.getElementById('audioVisualizer');
+        const ctx = canvas.getContext('2d');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const audioUpload = document.getElementById('audioUpload');
+        const speedSlider = document.getElementById('speedSlider');
+        const reverbSlider = document.getElementById('reverbSlider');
+        const filterSlider = document.getElementById('filterSlider');
+        const speedVal = document.getElementById('speedVal');
+        const reverbVal = document.getElementById('reverbVal');
+        const filterVal = document.getElementById('filterVal');
+        const statusDiv = document.getElementById('statusMsg');
+        const bodyEl = document.body;
+
+        // --- المتغيرات الصوتية ---
+        let audioContext = null;
+        let mediaElement = null;
+        let mediaSource = null;
+        let analyser = null;
+        let lowPass = null;
+        let delayNode = null;      // صدى بسيط بدون feedback (نظيف)
+        let dryGain = null;
+        let wetGain = null;
+        let outputGain = null;
+        
+        let isPlaying = false;
+        let currentFileUrl = null;
+        let animFrame = null;
+        let contextReady = false;
+
+        // ضبط حجم canvas
+        function resizeCanvas() {
+            const w = canvas.parentElement.clientWidth;
+            canvas.width = w;
+            canvas.height = 200;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // --- بناء شبكة الصوت النقية (بدون feedback loop لتجنب التشويش) ---
+        async function initAudioGraph() {
+            if (audioContext && contextReady) {
+                if (audioContext.state === 'suspended') await audioContext.resume();
+                return true;
+            }
+            try {
+                if (audioContext && audioContext.state !== 'closed') await audioContext.close();
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // محلل الترددات
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                
+                // مرشح low-pass (للعمق)
+                lowPass = audioContext.createBiquadFilter();
+                lowPass.type = "lowpass";
+                lowPass.frequency.value = parseFloat(filterSlider.value);
+                lowPass.Q = 5;
+                
+                // --- إعداد صدى نظيف بدون تغذية (delay + mix) ---
+                delayNode = audioContext.createDelay();
+                delayNode.delayTime.value = 0.32;   // 320ms صدى واحد نظيف
+                dryGain = audioContext.createGain();
+                wetGain = audioContext.createGain();
+                outputGain = audioContext.createGain();
+                
+                // توصيل الإشارة: المصدر -> lowPass -> (تفرع إلى dry و delay)
+                // ثم الجمع بعد delay
+                lowPass.connect(dryGain);
+                lowPass.connect(delayNode);
+                delayNode.connect(wetGain);
+                dryGain.connect(outputGain);
+                wetGain.connect(outputGain);
+                outputGain.connect(analyser);
+                analyser.connect(audioContext.destination);
+                
+                // تحديث المزيج بين الجاف والمبلل
+                updateReverbMix();
+                updateFilter();
+                
+                contextReady = true;
+                return true;
+            } catch(e) {
+                console.error(e);
+                statusDiv.innerText = "❌ فشل تهيئة الصوت";
+                return false;
+            }
+        }
+
+        // ربط العنصر الصوتي بالشبكة
+        async function connectMedia() {
+            if (!audioContext || !mediaElement || !contextReady) return false;
+            try {
+                if (mediaSource) {
+                    try { mediaSource.disconnect(); } catch(e) {}
+                }
+                mediaSource = audioContext.createMediaElementSource(mediaElement);
+                mediaSource.connect(lowPass);
+                return true;
+            } catch(e) {
+                console.warn(e);
+                return false;
+            }
+        }
+
+        // تحديث مزيج الصدى (نقي بدون تداخل)
+        function updateReverbMix() {
+            if (dryGain && wetGain) {
+                const wet = parseFloat(reverbSlider.value);
+                wetGain.gain.value = wet;
+                dryGain.gain.value = 1 - (wet * 0.6);  // الحفاظ على الوضوح
+                reverbVal.innerText = wet.toFixed(2);
+            }
+        }
+        
+        function updateFilter() {
+            if (lowPass) {
+                const freq = parseFloat(filterSlider.value);
+                lowPass.frequency.value = freq;
+                filterVal.innerText = freq + " Hz";
+            }
+        }
+        
+        function updatePlaybackRate() {
+            if (mediaElement) {
+                const val = parseFloat(speedSlider.value);
+                mediaElement.playbackRate = val;
+                speedVal.innerText = val.toFixed(2) + "x";
+            }
+        }
+
+        // تحميل ملف بدون تشغيل فوري
+        function loadAudioFile(file) {
+            if (!file || !file.type.startsWith('audio/')) {
+                statusDiv.innerText = "⚠️ رجاءً اختر ملفاً صوتياً (MP3, WAV, M4A)";
+                return false;
+            }
+            if (currentFileUrl) URL.revokeObjectURL(currentFileUrl);
+            currentFileUrl = URL.createObjectURL(file);
+            
+            if (mediaElement) {
+                mediaElement.pause();
+                mediaElement.src = '';
+            }
+            mediaElement = new Audio();
+            mediaElement.src = currentFileUrl;
+            mediaElement.crossOrigin = "anonymous";
+            mediaElement.preload = "auto";
+            mediaElement.loop = false;
+            updatePlaybackRate();
+            
+            mediaElement.onended = () => {
+                isPlaying = false;
+                statusDiv.innerText = "⏹ انتهى التشغيل، اضغط تشغيل مجدداً";
+                stopVisualizer();
+            };
+            mediaElement.onerror = () => {
+                statusDiv.innerText = "❌ خطأ في الملف، تأكد من صيغته";
+                stopVisualizer();
+            };
+            statusDiv.innerText = `✅ تم تحميل: ${file.name} | اضغط "تشغيل"`;
+            return true;
+        }
+
+        // --- التشغيل الرئيسي (بنقرة المستخدم) ---
+        async function startPlayback() {
+            if (!mediaElement || !currentFileUrl) {
+                statusDiv.innerText = "⚠️ ارفع ملفاً صوتياً أولاً";
+                return;
+            }
+            const graphOk = await initAudioGraph();
+            if (!graphOk) return;
+            
+            await connectMedia();
+            if (audioContext.state === 'suspended') await audioContext.resume();
+            
+            updatePlaybackRate();
+            updateFilter();
+            updateReverbMix();
+            
+            try {
+                await mediaElement.play();
+                isPlaying = true;
+                statusDiv.innerText = "🎵 جاري التشغيل بصوت نقي + تأثيرات | اهتزاز عند البيس";
+                startVisualizer();
+            } catch(err) {
+                statusDiv.innerText = "⚠️ فشل التشغيل: " + (err.message || "اضغط التشغيل مرة أخرى");
+                isPlaying = false;
+            }
+        }
+        
+        function pauseAudio() {
+            if (mediaElement && !mediaElement.paused) {
+                mediaElement.pause();
+                isPlaying = false;
+                statusDiv.innerText = "⏸ متوقف مؤقتاً";
+                stopVisualizer();
+            }
+        }
+        
+        function stopAudio() {
+            if (mediaElement) {
+                mediaElement.pause();
+                mediaElement.currentTime = 0;
+                isPlaying = false;
+                statusDiv.innerText = "⏹ تم الإيقاف وإعادة التعيين";
+                stopVisualizer();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // --- فيجواليزر قوي على شكل مربعات + تأثير اهتزاز (shake) عند ارتفاع الصوت ---
+        let lastShakeTime = 0;
+        function startVisualizer() {
+            if (animFrame) cancelAnimationFrame(animFrame);
+            function draw() {
+                if (!analyser || !isPlaying || !mediaElement || mediaElement.paused) {
+                    animFrame = requestAnimationFrame(draw);
+                    return;
+                }
+                if (canvas.width === 0) resizeCanvas();
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(dataArray);
+                
+                const w = canvas.width;
+                const h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                
+                const barCount = 60;
+                const step = Math.max(1, Math.floor(dataArray.length / barCount));
+                const barWidth = w / barCount;
+                
+                let maxLevel = 0;
+                for (let i = 0; i < barCount; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < step; j++) {
+                        let idx = i * step + j;
+                        if (idx < dataArray.length) sum += dataArray[idx];
+                    }
+                    let avg = sum / step;
+                    if (avg > maxLevel) maxLevel = avg;
+                    const percent = avg / 255;
+                    const barHeight = Math.max(4, percent * h * 0.9);
+                    const x = i * barWidth;
+                    // تدرج لوني من الوردي إلى الأحمر
+                    const gradient = ctx.createLinearGradient(x, h, x, h - barHeight);
+                    gradient.addColorStop(0, '#ff2a6d');
+                    gradient.addColorStop(1, '#ff9bc0');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, h - barHeight, barWidth - 1.5, barHeight);
+                    // إضافة توهج
+                    ctx.shadowBlur = 5;
+                    ctx.shadowColor = '#ff4d8c';
+                }
+                ctx.shadowBlur = 0;
+                
+                // --- تأثير اهتزاز قوي بناءً على شدة الصوت (خاصة الجهير) ---
+                // نأخذ متوسط الترددات المنخفضة (أول 20% من المصفوفة تمثل الجهير)
+                let bassSum = 0;
+                let bassCount = Math.min(20, dataArray.length);
+                for (let i = 0; i < bassCount; i++) bassSum += dataArray[i];
+                let bassAvg = bassSum / bassCount;
+                let intensity = bassAvg / 255;  // من 0 إلى 1
+                if (intensity > 0.55 && Date.now() - lastShakeTime > 150) {  // لمنع الاهتزاز المستمر
+                    bodyEl.classList.add('shake');
+                    lastShakeTime = Date.now();
+                    setTimeout(() => bodyEl.classList.remove('shake'), 200);
+                    // أيضاً نبسط على العنصر الرئيسي
+                    document.querySelector('.phonk-player').style.transform = `scale(${1 + intensity * 0.02})`;
+                    setTimeout(() => { document.querySelector('.phonk-player').style.transform = ''; }, 100);
+                }
+                animFrame = requestAnimationFrame(draw);
+            }
+            draw();
+        }
+        
+        function stopVisualizer() {
+            if (animFrame) {
+                cancelAnimationFrame(animFrame);
+                animFrame = null;
+            }
+        }
+        
+        // --- استئناف السياق عند اللمس (لـ iOS) ---
+        async function resumeContextOnTouch() {
+            if (audioContext && audioContext.state === 'suspended') {
+                await audioContext.resume();
+                statusDiv.innerText = "✓ الصوت جاهز، اضغط تشغيل";
+            }
+        }
+        document.body.addEventListener('touchstart', resumeContextOnTouch);
+        document.body.addEventListener('click', resumeContextOnTouch);
+        
+        // --- ربط الأحداث ---
+        playBtn.addEventListener('click', startPlayback);
+        pauseBtn.addEventListener('click', pauseAudio);
+        stopBtn.addEventListener('click', stopAudio);
+        audioUpload.addEventListener('change', (e) => {
+            if (e.target.files[0]) loadAudioFile(e.target.files[0]);
+        });
+        speedSlider.addEventListener('input', updatePlaybackRate);
+        filterSlider.addEventListener('input', updateFilter);
+        reverbSlider.addEventListener('input', updateReverbMix);
+        
+        resizeCanvas();
+        statusDiv.innerHTML = "📱 يعمل على iPhone & Safari | صوت نقي بدون تداخل | ارفع ملف ثم اضغط تشغيل";
+    })();
+</script>
+</body>
+</html>
